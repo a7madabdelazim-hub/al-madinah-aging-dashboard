@@ -550,12 +550,12 @@
 
             achieveHtml += `<tr>
                 <td><strong>${a.month}</strong></td>
-                <td class="text-right"><input type="number" step="0.01" inputmode="decimal" class="target-input" value="${a.tSales}" onchange="updateTarget(${idx}, 'tSales', this.value)"></td>
-                <td class="text-right">${actSales.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                <td class="text-right">${sPerc.toFixed(1)}%</td>
-                <td class="text-right"><input type="number" step="0.01" inputmode="decimal" class="target-input" value="${a.tColl}" onchange="updateTarget(${idx}, 'tColl', this.value)"></td>
-                <td class="text-right">${actColl.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                <td class="text-right">${cPerc.toFixed(1)}%</td>
+                <td class="text-right"><input type="number" step="0.01" inputmode="decimal" class="target-input" style="color:#d68910; font-weight:bold;" value="${a.tSales}" onchange="updateTarget(${idx}, 'tSales', this.value)"></td>
+                <td class="text-right" style="color:#f39c12; font-weight:bold;">${actSales.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td class="text-right" style="color:#e67e22; font-weight:bold;">${sPerc.toFixed(1)}%</td>
+                <td class="text-right"><input type="number" step="0.01" inputmode="decimal" class="target-input" style="color:#1f618d; font-weight:bold;" value="${a.tColl}" onchange="updateTarget(${idx}, 'tColl', this.value)"></td>
+                <td class="text-right" style="color:#2980b9; font-weight:bold;">${actColl.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td class="text-right" style="color:#3498db; font-weight:bold;">${cPerc.toFixed(1)}%</td>
             </tr>`;
 
             if (idx === 0) commHtml += `<tr class="quarter-header"><td colspan="7">Q1 (January - March)</td></tr>`;
@@ -565,12 +565,12 @@
 
             commHtml += `<tr>
                 <td><strong>${a.month}</strong></td>
-                <td class="text-right">${a.tSales.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                <td class="text-right">${actSales.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                <td class="text-right">${sPerc.toFixed(1)}%</td>
-                <td class="text-right">${a.tColl.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                <td class="text-right">${actColl.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                <td class="text-right">${cPerc.toFixed(1)}%</td>
+                <td class="text-right" style="color:#d68910; font-weight:bold;">${a.tSales.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td class="text-right" style="color:#f39c12; font-weight:bold;">${actSales.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td class="text-right" style="color:#e67e22; font-weight:bold;">${sPerc.toFixed(1)}%</td>
+                <td class="text-right" style="color:#1f618d; font-weight:bold;">${a.tColl.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td class="text-right" style="color:#2980b9; font-weight:bold;">${actColl.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td class="text-right" style="color:#3498db; font-weight:bold;">${cPerc.toFixed(1)}%</td>
             </tr>`;
         });
         document.getElementById('achieveBody').innerHTML = achieveHtml;

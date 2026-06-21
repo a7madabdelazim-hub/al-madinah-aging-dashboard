@@ -57,11 +57,12 @@
         
         /* Sticky Columns for Aging Table */
         #agingTable .sticky-1 { position: sticky; left: 0; z-index: 2; min-width: 80px; }
-        #agingTable .sticky-2 { position: sticky; left: 84px; z-index: 2; min-width: 150px; border-right: 3px solid var(--primary) !important; }
-        #agingTable tbody tr:nth-child(odd) .sticky-1, #agingTable tbody tr:nth-child(odd) .sticky-2 { background-color: #ffffff; }
-        #agingTable tbody tr:nth-child(even) .sticky-1, #agingTable tbody tr:nth-child(even) .sticky-2 { background-color: var(--stripe-color); }
-        #agingTable tbody tr:hover .sticky-1, #agingTable tbody tr:hover .sticky-2 { background-color: #d4efdf !important; }
-        #agingTable th.sticky-1, #agingTable th.sticky-2 { background-color: var(--primary); z-index: 3; border: 2px solid var(--primary); }
+        #agingTable .sticky-2 { position: sticky; left: 84px; z-index: 2; min-width: 120px; max-width: 120px; }
+        #agingTable .sticky-3 { position: sticky; left: 208px; z-index: 2; min-width: 90px; border-right: 3px solid var(--primary) !important; }
+        #agingTable tbody tr:nth-child(odd) .sticky-1, #agingTable tbody tr:nth-child(odd) .sticky-2, #agingTable tbody tr:nth-child(odd) .sticky-3 { background-color: #ffffff; }
+        #agingTable tbody tr:nth-child(even) .sticky-1, #agingTable tbody tr:nth-child(even) .sticky-2, #agingTable tbody tr:nth-child(even) .sticky-3 { background-color: var(--stripe-color); }
+        #agingTable tbody tr:hover .sticky-1, #agingTable tbody tr:hover .sticky-2, #agingTable tbody tr:hover .sticky-3 { background-color: #d4efdf !important; }
+        #agingTable th.sticky-1, #agingTable th.sticky-2, #agingTable th.sticky-3 { background-color: var(--primary); z-index: 3; border: 2px solid var(--primary); }
 
         .text-right { text-align: right; }
         .text-danger { color: var(--danger); }
@@ -163,7 +164,7 @@
             <div id="aging" class="view">
                 <div class="table-scroll">
                 <table id="agingTable">
-                    <thead><tr><th class="sticky-1">C. Number</th><th class="sticky-2">Customer Name</th><th class="text-right">Balance</th><th class="text-right">0-30</th><th class="text-right">30-60</th><th class="text-right">60-90</th><th class="text-right">90-120</th><th class="text-right">120-150</th><th class="text-right">>150</th></tr></thead>
+                    <thead><tr><th class="sticky-1">C. Number</th><th class="sticky-2">Customer Name</th><th class="sticky-3 text-right">Balance</th><th class="text-right">0-30</th><th class="text-right">30-60</th><th class="text-right">60-90</th><th class="text-right">90-120</th><th class="text-right">120-150</th><th class="text-right">>150</th></tr></thead>
                     <tbody id="agingBody"></tbody>
                 </table>
                 </div>
@@ -524,8 +525,8 @@
         });
 
         // Added sticky-1 and sticky-2 classes to the first two columns
-        let formatRow = (c) => `<tr><td class="sticky-1">${c.id}</td><td class="nowrap sticky-2">${c.name}</td><td class="text-right" style="font-weight: bold; color: var(--accent);">${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.buckets.f.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.buckets.g.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.buckets.h.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.buckets.i.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.buckets.j.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.buckets.k.toLocaleString('en-US', {minimumFractionDigits: 2})}</td></tr>`;
-        let formatTotalRow = (title, t, cls) => `<tr class="${cls}"><td class="sticky-1" colspan="2">${title}</td><td class="text-right">${t.bal.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${t.f.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${t.g.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${t.h.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${t.i.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${t.j.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${t.k.toLocaleString('en-US', {minimumFractionDigits: 2})}</td></tr>`;
+        let formatRow = (c) => `<tr><td class="sticky-1">${c.id}</td><td class="nowrap sticky-2">${c.name}</td><td class="sticky-3 text-right" style="font-weight: bold; color: var(--accent);">${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.buckets.f.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.buckets.g.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.buckets.h.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.buckets.i.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.buckets.j.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.buckets.k.toLocaleString('en-US', {minimumFractionDigits: 2})}</td></tr>`;
+        let formatTotalRow = (title, t, cls) => `<tr class="${cls}"><td class="sticky-1" colspan="2">${title}</td><td class="sticky-3 text-right">${t.bal.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${t.f.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${t.g.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${t.h.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${t.i.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${t.j.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${t.k.toLocaleString('en-US', {minimumFractionDigits: 2})}</td></tr>`;
 
         agingHtml += customers.filter(c => c.cat === "Wholesale").map(formatRow).join('');
         agingHtml += formatTotalRow("WHOLESALE AL MADINAH TOTAL", wTotal, "total-row-w");

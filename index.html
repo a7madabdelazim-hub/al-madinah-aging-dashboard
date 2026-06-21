@@ -56,7 +56,7 @@
         .text-danger { color: var(--danger); }
         .nowrap { white-space: nowrap; }
         
-        .total-row-w td { background: #e8f6f3 !important; font-weight: bold; color: #16a085; border: 2px solid #d1e8e0 !important; }
+        .total-row-w td { background: #a3e4d7 !important; font-weight: bold; color: #0e6655; border: 2px solid #76d7c4 !important; }
         .total-row-r td { background: #fef5e7 !important; font-weight: bold; color: #d68910; border: 2px solid #fdebd0 !important; }
         .total-row-g td { background: #eaecee !important; font-weight: bold; color: var(--primary); font-size: 1rem; border: 2px solid #d5dbdb !important; }
         .quarter-header td { background: var(--secondary) !important; color: white; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border: 2px solid var(--primary) !important; }
@@ -156,9 +156,9 @@
                 </table>
             </div>
 
-            <div id="invoices" class="view"><div class="form-container"><h3>Record New Invoice</h3><div class="form-group"><label>Customer (Type Name or ID)</label><input type="text" class="form-control" id="invCustomer" list="customerList" placeholder="Type customer name..."><datalist id="customerList"></datalist></div><div class="form-group"><label>Invoice Number</label><input type="text" class="form-control" id="invNumber" placeholder="e.g., 103801"></div><div class="form-group"><label>Amount (SAR)</label><input type="number" step="0.001" class="form-control" id="invAmount" placeholder="e.g., 1500.50"></div><button class="btn" onclick="addTransaction('invoice')">Save Invoice</button></div></div>
-            <div id="collections" class="view"><div class="form-container"><h3>Record New Collection</h3><div class="form-group"><label>Customer (Type Name or ID)</label><input type="text" class="form-control" id="collCustomer" list="customerList" placeholder="Type customer name..."></div><div class="form-group"><label>Amount (SAR)</label><input type="number" step="0.001" class="form-control" id="collAmount" placeholder="e.g., 500.00"></div><button class="btn" onclick="addTransaction('collection')">Save Collection</button></div></div>
-            <div id="returns" class="view"><div class="form-container"><h3>Record New Return</h3><div class="form-group"><label>Customer (Type Name or ID)</label><input type="text" class="form-control" id="retCustomer" list="customerList" placeholder="Type customer name..."></div><div class="form-group"><label>Amount (SAR)</label><input type="number" step="0.001" class="form-control" id="retAmount" placeholder="e.g., 50.00"></div><button class="btn" onclick="addTransaction('return')">Save Return</button></div></div>
+            <div id="invoices" class="view"><div class="form-container"><h3>Record New Invoice</h3><div class="form-group"><label>Customer (Type Name or ID)</label><input type="text" class="form-control" id="invCustomer" list="customerList" placeholder="Type customer name..."><datalist id="customerList"></datalist></div><div class="form-group"><label>Invoice Number</label><input type="number" step="0.01" inputmode="decimal" class="form-control" id="invNumber" placeholder="e.g., 103801"></div><div class="form-group"><label>Amount (SAR)</label><input type="number" step="0.001" inputmode="decimal" class="form-control" id="invAmount" placeholder="e.g., 1500.50"></div><button class="btn" onclick="addTransaction('invoice')">Save Invoice</button></div></div>
+            <div id="collections" class="view"><div class="form-container"><h3>Record New Collection</h3><div class="form-group"><label>Customer (Type Name or ID)</label><input type="text" class="form-control" id="collCustomer" list="customerList" placeholder="Type customer name..."></div><div class="form-group"><label>Amount (SAR)</label><input type="number" step="0.001" inputmode="decimal" class="form-control" id="collAmount" placeholder="e.g., 500.00"></div><button class="btn" onclick="addTransaction('collection')">Save Collection</button></div></div>
+            <div id="returns" class="view"><div class="form-container"><h3>Record New Return</h3><div class="form-group"><label>Customer (Type Name or ID)</label><input type="text" class="form-control" id="retCustomer" list="customerList" placeholder="Type customer name..."></div><div class="form-group"><label>Amount (SAR)</label><input type="number" step="0.001" inputmode="decimal" class="form-control" id="retAmount" placeholder="e.g., 50.00"></div><button class="btn" onclick="addTransaction('return')">Save Return</button></div></div>
 
             <div id="history" class="view"><table id="historyTable"><thead><tr><th>Date</th><th>Type</th><th>Customer Name</th><th>Inv #</th><th class="text-right">Amount</th></tr></thead><tbody id="historyBody"></tbody></table></div>
 
@@ -178,7 +178,7 @@
                 </table>
             </div>
 
-            <div id="addCustomer" class="view"><div class="form-container"><h3>Add New Customer</h3><div class="form-group"><label>Category</label><select class="form-control" id="newCustCat"><option value="Wholesale">Wholesale</option><option value="Restaurants">Restaurants</option></select></div><div class="form-group"><label>Customer Number</label><input type="text" class="form-control" id="newCustId" placeholder="e.g., 12034100"></div><div class="form-group"><label>Customer Name</label><input type="text" class="form-control" id="newCustName" placeholder="e.g., مطعم جديد"></div><button class="btn" onclick="addNewCustomer()">Save Customer</button></div></div>
+            <div id="addCustomer" class="view"><div class="form-container"><h3>Add New Customer</h3><div class="form-group"><label>Category</label><select class="form-control" id="newCustCat"><option value="Wholesale">Wholesale</option><option value="Restaurants">Restaurants</option></select></div><div class="form-group"><label>Customer Number</label><input type="number" step="0.01" inputmode="decimal" class="form-control" id="newCustId" placeholder="e.g., 12034100"></div><div class="form-group"><label>Customer Name</label><input type="text" class="form-control" id="newCustName" placeholder="e.g., مطعم جديد"></div><button class="btn" onclick="addNewCustomer()">Save Customer</button></div></div>
 
             <div id="reverse" class="view">
                 <div class="reverse-panel">
@@ -499,7 +499,7 @@
         document.getElementById('totalReturns').innerText = totalRet.toLocaleString('en-US', {minimumFractionDigits: 2}) + " SAR";
 
         document.getElementById('dashBody').innerHTML = customers.map(c => `
-            <tr><td>${c.id}</td><td class="nowrap">${c.name}</td><td class="text-right">${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.currentInv.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right">${c.currentColl.toLocaleString('en-US', {minimumFractionDigits: 2})}</td></tr>`).join('');
+            <tr><td>${c.id}</td><td class="nowrap">${c.name}</td><td class="text-right" style="font-weight: bold; color: var(--accent);">${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right" style="font-weight: bold; color: var(--warning);">${c.currentInv.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-right" style="font-weight: bold; color: #2980b9;">${c.currentColl.toLocaleString('en-US', {minimumFractionDigits: 2})}</td></tr>`).join('');
 
         let agingHtml = "";
         let wTotal = {f:0, g:0, h:0, i:0, j:0, k:0, bal:0};
@@ -550,10 +550,10 @@
 
             achieveHtml += `<tr>
                 <td><strong>${a.month}</strong></td>
-                <td class="text-right"><input type="number" class="target-input" value="${a.tSales}" onchange="updateTarget(${idx}, 'tSales', this.value)"></td>
+                <td class="text-right"><input type="number" step="0.01" inputmode="decimal" class="target-input" value="${a.tSales}" onchange="updateTarget(${idx}, 'tSales', this.value)"></td>
                 <td class="text-right">${actSales.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
                 <td class="text-right">${sPerc.toFixed(1)}%</td>
-                <td class="text-right"><input type="number" class="target-input" value="${a.tColl}" onchange="updateTarget(${idx}, 'tColl', this.value)"></td>
+                <td class="text-right"><input type="number" step="0.01" inputmode="decimal" class="target-input" value="${a.tColl}" onchange="updateTarget(${idx}, 'tColl', this.value)"></td>
                 <td class="text-right">${actColl.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
                 <td class="text-right">${cPerc.toFixed(1)}%</td>
             </tr>`;

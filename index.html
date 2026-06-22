@@ -91,7 +91,8 @@
         /* Sticky first column so users scrolling right still know which
            customer/month the row refers to. */
         .table-wrap > table thead th:first-child,
-        .table-wrap > table tbody td:first-child {
+        .table-wrap > table tbody td:first-child,
+        .table-wrap > table tfoot td:first-child {
             position: sticky; left: 0; z-index: 1;
             background: white;
             box-shadow: 2px 0 0 var(--border);
@@ -104,6 +105,10 @@
            cell needs to match — otherwise it looks transparent. */
         .table-wrap > table tbody tr:nth-child(even) td:first-child { background: var(--stripe-color); }
         .table-wrap > table tbody tr:nth-child(odd)  td:first-child { background: #ffffff; }
+        /* Subtotal rows in <tfoot> use --row-bg from .total-row-w / -r / -g.
+           The sticky first cell must mirror that background or it becomes
+           transparent when the user scrolls right. */
+        .table-wrap > table tfoot td:first-child { background: var(--row-bg, #ffffff); }
 
         table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--stripe-color); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-card); margin-bottom: 20px; }
         caption { padding: 8px; caption-side: top; text-align: left; color: #7f8c8d; font-size: 0.85rem; }
@@ -111,7 +116,13 @@
         th { background-color: var(--primary); color: white; font-weight: 600; border: 1px solid var(--secondary); }
         tbody tr:nth-child(odd)  td { background-color: #ffffff; }
         tbody tr:nth-child(even) td { background-color: var(--stripe-color); }
-        tbody tr:hover td { background-color: #d4efdf !important; }
+        /* Hover only on devices that actually support hover (mouse/trackpad).
+           On iOS Safari, :hover sticks after tap — without this guard the
+           row would stay green until the user tapped elsewhere, which
+           looks like a bug. */
+        @media (hover: hover) {
+            tbody tr:hover td { background-color: #d4efdf !important; }
+        }
         thead th { position: sticky; top: 0; z-index: 2; }
 
         /* ---- Cell utility classes (replaces inline styles) ---- */
@@ -236,6 +247,24 @@
             th, td { padding: 8px 10px; font-size: 0.95rem; }
         }
 
+        /* ---- Pro Max portrait (430px) and smaller phones (390/375px) ----
+           Tighter padding, 2-up dashboard cards, full-width search input,
+           and reduced font sizes so wide tables fit more columns before
+           needing horizontal scroll. */
+        @media (max-width: 480px) {
+            .dashboard-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .card { padding: 14px; }
+            .card h3 { font-size: 0.8rem; }
+            .card .value { font-size: 1.3rem; }
+            .top-bar { padding: 10px 12px; padding-top: calc(10px + env(safe-area-inset-top)); gap: 8px; }
+            .search-input { max-width: none; }
+            .content-area { padding: 12px; }
+            th, td { padding: 6px 8px; font-size: 0.85rem; }
+            .form-container, .macro-panel, .reverse-panel { padding: 20px; }
+            .modal-box { padding: 20px; }
+            .btn { padding: 12px 20px; font-size: 0.95rem; }
+        }
+
         /* ---- Reduced motion ---- */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
@@ -245,6 +274,11 @@
             }
         }
     </style>
+    <!-- SVG favicon: tiny inline payload (~250 bytes). Modern browsers
+         prefer this over the larger base64 PNG rel="icon" above. The
+         PNG apple-touch-icon is kept because iOS Safari still requires
+         a PNG for "Add to Home Screen". -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%2327ae60'/><text x='32' y='44' font-size='40' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>AM</text></svg>">
 </head>
 <body>
 

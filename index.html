@@ -292,10 +292,10 @@
                     <div class="card"><h3>Current Collected</h3><div class="value" id="totalCollections">0.00 SAR</div></div>
                     <div class="card danger"><h3>Current Returns</h3><div class="value" id="totalReturns">0.00 SAR</div></div>
                 </div>
-                <h3>Recent Customers</h3>
+                <h3>Wholesale Customers</h3>
                 <div class="table-wrap">
-                <table id="dashTable">
-                    <caption>Recent customer balances, invoices, and collections</caption>
+                <table id="dashWholesaleTable">
+                    <caption>Wholesale customer balances, invoices, and collections</caption>
                     <thead><tr>
                         <th scope="col">C. Number</th>
                         <th scope="col">Customer Name</th>
@@ -303,7 +303,38 @@
                         <th scope="col" class="text-right">Inv.</th>
                         <th scope="col" class="text-right">Coll.</th>
                     </tr></thead>
-                    <tbody id="dashBody"></tbody>
+                    <tbody id="dashWholesaleBody"></tbody>
+                    <tfoot>
+                        <tr class="total-row total-row-w">
+                            <td colspan="2">Wholesale Subtotal</td>
+                            <td class="cell-balance"  id="wSubBal">0.00</td>
+                            <td class="cell-invoice"  id="wSubInv">0.00</td>
+                            <td class="cell-collect"  id="wSubColl">0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>
+
+                <h3>Restaurant Customers</h3>
+                <div class="table-wrap">
+                <table id="dashRestaurantsTable">
+                    <caption>Restaurant customer balances, invoices, and collections</caption>
+                    <thead><tr>
+                        <th scope="col">C. Number</th>
+                        <th scope="col">Customer Name</th>
+                        <th scope="col" class="text-right">Balance</th>
+                        <th scope="col" class="text-right">Inv.</th>
+                        <th scope="col" class="text-right">Coll.</th>
+                    </tr></thead>
+                    <tbody id="dashRestaurantsBody"></tbody>
+                    <tfoot>
+                        <tr class="total-row total-row-r">
+                            <td colspan="2">Restaurant Subtotal</td>
+                            <td class="cell-balance"  id="rSubBal">0.00</td>
+                            <td class="cell-invoice"  id="rSubInv">0.00</td>
+                            <td class="cell-collect"  id="rSubColl">0.00</td>
+                        </tr>
+                    </tfoot>
                 </table>
                 </div>
             </section>
@@ -1066,13 +1097,18 @@
     // ============================================================
     const searchTable = (query) => {
         const q = String(query || '').toLowerCase();
-        const activeView = document.querySelector('.view.active table');
+        const activeView = document.querySelector('.view.active');
         if (!activeView) return;
-        const tbody = activeView.querySelector('tbody');
-        if (!tbody) return;
-        tbody.querySelectorAll('tr').forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = q && !text.includes(q) ? 'none' : '';
+        // Use querySelectorAll so the Dashboard (which now has TWO tables:
+        // Wholesale + Restaurants) gets both searched. Other views still
+        // work because the loop simply iterates over a 1-element list.
+        const tbodies = activeView.querySelectorAll('table tbody');
+        if (!tbodies.length) return;
+        tbodies.forEach(tbody => {
+            tbody.querySelectorAll('tr').forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = q && !text.includes(q) ? 'none' : '';
+            });
         });
     };
 
@@ -1095,15 +1131,41 @@
         document.getElementById('totalCollections').textContent = fmtSAR(totalColl) + ' SAR';
         document.getElementById('totalReturns').textContent     = fmtSAR(totalRet)  + ' SAR';
 
-        // Dashboard table
-        document.getElementById('dashBody').innerHTML = customers.map(c => `
+        // Dashboard tables — split by category.
+        // Wholesale customers go into #dashWholesaleBody, Restaurants into
+        // #dashRestaurantsBody. Each table has its own subtotal row in <tfoot>.
+        const dashRow = (c) => `
             <tr>
                 ${cell(c.id)}
                 ${cellArabic(c.name, 'nowrap')}
                 ${cellSAR(c.balance,    'cell-balance')}
                 ${cellSAR(c.currentInv, 'cell-invoice')}
                 ${cellSAR(c.currentColl,'cell-collect')}
-            </tr>`).join('');
+            </tr>`;
+
+        const wholesaleCustomers = customers.filter(c => c.cat === 'Wholesale');
+        const restaurantCustomers = customers.filter(c => c.cat === 'Restaurants');
+
+        document.getElementById('dashWholesaleBody').innerHTML  = wholesaleCustomers.map(dashRow).join('');
+        document.getElementById('dashRestaurantsBody').innerHTML = restaurantCustomers.map(dashRow).join('');
+
+        // Subtotals for each dashboard table (mirrors the Aging tab pattern)
+        const wSub = {
+            bal: roundMoney(wholesaleCustomers.reduce((s, c) => s + c.balance,    0)),
+            inv: roundMoney(wholesaleCustomers.reduce((s, c) => s + c.currentInv, 0)),
+            col: roundMoney(wholesaleCustomers.reduce((s, c) => s + c.currentColl,0))
+        };
+        const rSub = {
+            bal: roundMoney(restaurantCustomers.reduce((s, c) => s + c.balance,    0)),
+            inv: roundMoney(restaurantCustomers.reduce((s, c) => s + c.currentInv, 0)),
+            col: roundMoney(restaurantCustomers.reduce((s, c) => s + c.currentColl,0))
+        };
+        document.getElementById('wSubBal').textContent  = fmtSAR(wSub.bal);
+        document.getElementById('wSubInv').textContent  = fmtSAR(wSub.inv);
+        document.getElementById('wSubColl').textContent = fmtSAR(wSub.col);
+        document.getElementById('rSubBal').textContent  = fmtSAR(rSub.bal);
+        document.getElementById('rSubInv').textContent  = fmtSAR(rSub.inv);
+        document.getElementById('rSubColl').textContent = fmtSAR(rSub.col);
 
         // Aging table
         const wTotal = sumBuckets(customers.filter(c => c.cat === 'Wholesale'));

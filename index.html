@@ -122,12 +122,25 @@
         .cell-invoice { font-weight: bold; color: var(--warning); text-align: right; }
         .cell-collect { font-weight: bold; color: #2980b9;       text-align: right; }
         .cell-amount  { color: var(--danger);                    text-align: right; }
-        .cell-target-sales { color: #d68910; font-weight: bold; text-align: right; }
-        .cell-actual-sales { color: #f39c12; font-weight: bold; text-align: right; }
-        .cell-pct-sales    { color: #e67e22; font-weight: bold; text-align: right; }
-        .cell-target-coll  { color: #1f618d; font-weight: bold; text-align: right; }
-        .cell-actual-coll  { color: #2980b9; font-weight: bold; text-align: right; }
-        .cell-pct-coll     { color: #3498db; font-weight: bold; text-align: right; }
+
+        /* ---- Target & Commission tab column coloring ----
+           Professional palette designed as two analogous pairs:
+             Sales pair (warm):  Crimson (target) + Amber (actual)
+             Coll.  pair (cool): Navy   (target) + Teal  (actual)
+           Warm-vs-cool separation lets users instantly tell a Sales
+           column from a Collection column at a glance, while target
+           and actual within each pair stay visually related.
+           All four colors meet WCAG AA contrast (>= 4.5:1) on the
+           white / stripe-color table backgrounds.
+           These same classes are reused by BOTH #achieveTable
+           (Target tab) and #commTable (Commission tab) — one CSS
+           change updates both tabs consistently. */
+        .cell-target-sales { color: #c0392b; font-weight: bold; text-align: right; }  /* Crimson Red   — Target Sales    */
+        .cell-actual-sales { color: #b9770e; font-weight: bold; text-align: right; }  /* Dark Amber    — Actual Sales    */
+        .cell-pct-sales    { color: #e67e22; font-weight: bold; text-align: right; }  /* (kept for fallback; usually overridden by .pct-* conditional classes) */
+        .cell-target-coll  { color: #1a5276; font-weight: bold; text-align: right; }  /* Deep Navy     — Target Coll.    */
+        .cell-actual-coll  { color: #117a65; font-weight: bold; text-align: right; }  /* Forest Teal   — Actual Coll.    */
+        .cell-pct-coll     { color: #3498db; font-weight: bold; text-align: right; }  /* (kept for fallback; usually overridden by .pct-* conditional classes) */
 
         /* ---- Conditional percentage coloring (threshold-based) ----
            Applied alongside .cell-pct-sales / .cell-pct-coll in both

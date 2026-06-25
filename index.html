@@ -274,6 +274,209 @@
             }
         }
     </style>
+
+    <style>
+        /* ---- Aging column colors (0-30 & 30-60 green, 60-90 yellow, 90+ red) ---- */
+        .aging-f, .aging-g { color: #1e8449; font-weight: 600; }
+        .aging-h            { color: #f1c40f; font-weight: 600; background-color: rgba(241, 196, 15, 0.18) !important; }
+        .aging-i, .aging-j, .aging-k { color: #c0392b; font-weight: 600; }
+        /* Balance column: deep indigo (overrides existing .cell-balance) */
+        .cell-balance { font-weight: bold; color: #1a1f71; text-align: right; }
+        /* Returns column (new in Dashboard) */
+        .cell-returns { font-weight: bold; color: #8e44ad; text-align: right; }
+
+        /* ---- Apple-style design system for Achieve Target + Commission tabs ---- */
+        .apple-section {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                          "Helvetica Neue", system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .apple-header { margin-bottom: 24px; }
+        .apple-header h3 {
+            font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+            margin: 0 0 4px 0; color: #1d1d1f;
+        }
+        .apple-subtitle {
+            font-size: 15px; color: #6e6e73; margin: 0;
+        }
+
+        .apple-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .apple-card {
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        @media (hover: hover) {
+            .apple-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 32px rgba(0, 0, 0, 0.1);
+            }
+        }
+        .apple-card-label {
+            font-size: 13px; color: #6e6e73; text-transform: uppercase;
+            letter-spacing: 0.06em; font-weight: 600; margin-bottom: 10px;
+        }
+        .apple-card-value {
+            font-size: 26px; font-weight: 700; color: #1d1d1f;
+            letter-spacing: -0.02em; line-height: 1.15;
+        }
+        .apple-card-sub {
+            font-size: 13px; color: #6e6e73; margin-top: 6px;
+        }
+        .apple-card-progress {
+            display: flex; align-items: center; gap: 16px;
+        }
+        .progress-ring { flex-shrink: 0; }
+        .progress-ring-bg {
+            fill: none; stroke: rgba(0, 0, 0, 0.08); stroke-width: 8;
+        }
+        .progress-ring-fg {
+            fill: none; stroke-width: 8; stroke-linecap: round;
+            transform: rotate(-90deg); transform-origin: center;
+            transition: stroke-dashoffset 0.6s ease, stroke 0.3s ease;
+        }
+        .apple-reached {
+            display: inline-block;
+            background: rgba(52, 199, 89, 0.16);
+            color: #248a3d;
+            padding: 6px 14px; border-radius: 999px;
+            font-size: 14px; font-weight: 600;
+        }
+        .apple-card-remaining {
+            font-size: 13px; color: #1d1d1f; margin-top: 8px;
+            padding: 6px 10px; background: rgba(0, 0, 0, 0.04);
+            border-radius: 8px; font-weight: 500;
+        }
+        .apple-card-reached {
+            display: inline-block;
+            background: rgba(52, 199, 89, 0.16);
+            color: #248a3d;
+            padding: 6px 12px; border-radius: 999px;
+            font-size: 13px; font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .apple-table-wrap {
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            overflow: auto;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+        }
+        .apple-table {
+            width: 100%; border-collapse: collapse; background: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                          "Helvetica Neue", system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .apple-table caption {
+            padding: 18px 22px 12px; caption-side: top; text-align: left;
+            color: #6e6e73; font-size: 13px; font-weight: 500;
+        }
+        .apple-table thead th {
+            background: rgba(245, 245, 247, 0.85);
+            color: #1d1d1f; font-weight: 600; font-size: 12px;
+            text-transform: uppercase; letter-spacing: 0.04em;
+            padding: 14px 18px; border: none; border-bottom: 1px solid rgba(0,0,0,0.06);
+            text-align: left; position: sticky; top: 0; z-index: 2;
+        }
+        /* Per-column header colors: warm pair (Sales = crimson/amber),
+           cool pair (Coll = navy/teal), % = neutral gray (gets overridden
+           by conditional .apple-pct-cell-* on body cells). */
+        .apple-table thead th.col-target-sales { background: #c0392b; color: #fff; }
+        .apple-table thead th.col-actual-sales { background: #b9770e; color: #fff; }
+        .apple-table thead th.col-pct-sales    { background: #6e6e73; color: #fff; }
+        .apple-table thead th.col-target-coll  { background: #1a5276; color: #fff; }
+        .apple-table thead th.col-actual-coll  { background: #117a65; color: #fff; }
+        .apple-table thead th.col-pct-coll     { background: #6e6e73; color: #fff; }
+
+        /* Per-column body cell tints (very light wash so rows remain readable) */
+        .apple-table tbody td.col-target-sales { background: rgba(192, 57, 43, 0.06) !important; color: #c0392b; font-weight: 500; }
+        .apple-table tbody td.col-actual-sales { background: rgba(185, 119, 14, 0.06) !important; color: #b9770e; font-weight: 500; }
+        .apple-table tbody td.col-target-coll  { background: rgba(26, 82, 118, 0.06) !important; color: #1a5276; font-weight: 500; }
+        .apple-table tbody td.col-actual-coll  { background: rgba(17, 122, 101, 0.06) !important; color: #117a65; font-weight: 500; }
+
+        /* Bolder conditional % cell coloring (already exists, made more prominent) */
+        .apple-pct-cell-low  { background: rgba(255, 59, 48, 0.22) !important;  color: #c93400 !important; font-weight: 700 !important; text-align: right; }
+        .apple-pct-cell-warn { background: rgba(255, 204, 0, 0.28) !important;  color: #8a6500 !important; font-weight: 700 !important; text-align: right; }
+        .apple-pct-cell-good { background: rgba(52, 199, 89, 0.22) !important;  color: #1e7a32 !important; font-weight: 700 !important; text-align: right; }
+        .apple-table thead th.text-right { text-align: right; }
+        .apple-table tbody td {
+            padding: 14px 18px; border: none; border-bottom: 1px solid rgba(0,0,0,0.04);
+            font-size: 15px; color: #1d1d1f; background: transparent !important;
+        }
+        .apple-table tbody td.text-right { text-align: right; }
+        .apple-table tbody tr:last-child td { border-bottom: none; }
+        @media (hover: hover) {
+            .apple-table tbody tr:hover td { background: rgba(0, 0, 0, 0.02) !important; }
+        }
+
+        /* Apple-style conditional coloring (cell-level tints) */
+        .apple-pct-cell-low  { background: rgba(255, 59, 48, 0.12) !important;  color: #c93400; font-weight: 600; text-align: right; }
+        .apple-pct-cell-warn { background: rgba(255, 149, 0, 0.12) !important;  color: #c93400; font-weight: 600; text-align: right; }
+        .apple-pct-cell-good { background: rgba(52, 199, 89, 0.12) !important;  color: #248a3d; font-weight: 600; text-align: right; }
+
+        .apple-quarter-header td {
+            background: rgba(0, 0, 0, 0.04) !important;
+            color: #6e6e73; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.06em;
+            font-size: 12px; padding: 10px 18px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .apple-target-input {
+            width: 100%; max-width: 120px; min-height: 36px;
+            padding: 6px 10px;
+            border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px;
+            text-align: right; font-family: inherit; font-size: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .apple-target-input:focus {
+            outline: none; border-color: #007aff;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+        }
+
+        /* History action buttons */
+        .history-actions { display: flex; gap: 6px; flex-wrap: nowrap; }
+        .btn-action {
+            border: none; cursor: pointer; padding: 6px 12px;
+            border-radius: 8px; font-size: 13px; font-weight: 500;
+            font-family: inherit;
+            transition: background-color 0.2s ease;
+            white-space: nowrap;
+        }
+        .btn-edit { background: rgba(0, 122, 255, 0.12); color: #0040a0; }
+        .btn-edit:hover { background: rgba(0, 122, 255, 0.20); }
+        .btn-delete { background: rgba(255, 59, 48, 0.12); color: #c93400; }
+        .btn-delete:hover { background: rgba(255, 59, 48, 0.20); }
+
+        /* Month-End Macro notice (after July fix) */
+        .macro-advance-note {
+            background: rgba(255, 149, 0, 0.10);
+            border-left: 4px solid #f39c12;
+            padding: 10px 14px;
+            margin: 12px 0 20px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: #6e6e73;
+        }
+    </style>
     <!-- SVG favicon: tiny inline payload (~250 bytes). Modern browsers
          prefer this over the larger base64 PNG rel="icon" above. The
          PNG apple-touch-icon is kept because iOS Safari still requires
@@ -336,6 +539,7 @@
                         <th scope="col" class="text-right">Balance</th>
                         <th scope="col" class="text-right">Inv.</th>
                         <th scope="col" class="text-right">Coll.</th>
+                        <th scope="col" class="text-right">Ret.</th>
                     </tr></thead>
                     <tbody id="dashWholesaleBody"></tbody>
                     <tfoot>
@@ -344,6 +548,7 @@
                             <td class="cell-balance"  id="wSubBal">0.00</td>
                             <td class="cell-invoice"  id="wSubInv">0.00</td>
                             <td class="cell-collect"  id="wSubColl">0.00</td>
+                            <td class="cell-returns"  id="wSubRet">0.00</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -359,6 +564,7 @@
                         <th scope="col" class="text-right">Balance</th>
                         <th scope="col" class="text-right">Inv.</th>
                         <th scope="col" class="text-right">Coll.</th>
+                        <th scope="col" class="text-right">Ret.</th>
                     </tr></thead>
                     <tbody id="dashRestaurantsBody"></tbody>
                     <tfoot>
@@ -367,6 +573,7 @@
                             <td class="cell-balance"  id="rSubBal">0.00</td>
                             <td class="cell-invoice"  id="rSubInv">0.00</td>
                             <td class="cell-collect"  id="rSubColl">0.00</td>
+                            <td class="cell-returns"  id="rSubRet">0.00</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -407,7 +614,7 @@
                     </div>
                     <div class="form-group">
                         <label for="invAmount">Amount (SAR)</label>
-                        <input type="number" step="0.001" inputmode="decimal" class="form-control" id="invAmount" placeholder="e.g., 1500.50" min="0" required>
+                        <input type="text" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="invAmount" placeholder="e.g., 1500.50" autocomplete="off" required>
                         <p class="field-error" id="invAmount-error">Please enter a positive amount.</p>
                     </div>
                     <button class="btn" data-action="add-invoice">Save Invoice</button>
@@ -423,7 +630,7 @@
                     </div>
                     <div class="form-group">
                         <label for="collAmount">Amount (SAR)</label>
-                        <input type="number" step="0.001" inputmode="decimal" class="form-control" id="collAmount" placeholder="e.g., 500.00" min="0" required>
+                        <input type="text" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="collAmount" placeholder="e.g., 500.00" autocomplete="off" required>
                         <p class="field-error" id="collAmount-error">Please enter a positive amount.</p>
                     </div>
                     <button class="btn" data-action="add-collection">Save Collection</button>
@@ -439,7 +646,7 @@
                     </div>
                     <div class="form-group">
                         <label for="retAmount">Amount (SAR)</label>
-                        <input type="number" step="0.001" inputmode="decimal" class="form-control" id="retAmount" placeholder="e.g., 50.00" min="0" required>
+                        <input type="text" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="retAmount" placeholder="e.g., 50.00" autocomplete="off" required>
                         <p class="field-error" id="retAmount-error">Please enter a positive amount.</p>
                     </div>
                     <button class="btn" data-action="add-return">Save Return</button>
@@ -456,44 +663,53 @@
                         <th scope="col">Customer Name</th>
                         <th scope="col">Inv #</th>
                         <th scope="col" class="text-right">Amount</th>
+                        <th scope="col">Actions</th>
                     </tr></thead>
                     <tbody id="historyBody"></tbody>
                 </table>
                 </div>
             </section>
 
-            <section id="achieve" class="view" aria-labelledby="viewTitle">
-                <h3>Achieve Targets (Editable)</h3>
-                <p style="color:#7f8c8d;">Actuals for the current month calculate live from your Dashboard.</p>
-                <div class="table-wrap">
-                <table id="achieveTable">
+            <section id="achieve" class="view apple-section" aria-labelledby="viewTitle">
+                <div class="apple-header">
+                    <h3>Achieve Targets</h3>
+                    <p class="apple-subtitle">Live performance for the current month. Targets are editable.</p>
+                </div>
+                <div class="apple-cards-grid" id="achieveCards"></div>
+                <div class="apple-table-wrap">
+                <table class="apple-table" id="achieveTable">
                     <caption>Monthly sales and collection targets vs actuals</caption>
                     <thead><tr>
                         <th scope="col">Month</th>
-                        <th scope="col" class="text-right">Target Sales</th>
-                        <th scope="col" class="text-right">Actual Sales</th>
-                        <th scope="col" class="text-right">Sales %</th>
-                        <th scope="col" class="text-right">Target Coll.</th>
-                        <th scope="col" class="text-right">Actual Coll.</th>
-                        <th scope="col" class="text-right">Coll. %</th>
+                        <th scope="col" class="text-right col-target-sales">Target Sales</th>
+                        <th scope="col" class="text-right col-actual-sales">Actual Sales</th>
+                        <th scope="col" class="text-right col-pct-sales">Sales %</th>
+                        <th scope="col" class="text-right col-target-coll">Target Coll.</th>
+                        <th scope="col" class="text-right col-actual-coll">Actual Coll.</th>
+                        <th scope="col" class="text-right col-pct-coll">Coll. %</th>
                     </tr></thead>
                     <tbody id="achieveBody"></tbody>
                 </table>
                 </div>
             </section>
 
-            <section id="commission" class="view" aria-labelledby="viewTitle">
-                <div class="table-wrap">
-                <table id="commTable">
+            <section id="commission" class="view apple-section" aria-labelledby="viewTitle">
+                <div class="apple-header">
+                    <h3>Commission</h3>
+                    <p class="apple-subtitle">Commission-eligible monthly performance.</p>
+                </div>
+                <div class="apple-cards-grid" id="commCards"></div>
+                <div class="apple-table-wrap">
+                <table class="apple-table" id="commTable">
                     <caption>Commission-eligible monthly performance</caption>
                     <thead><tr>
                         <th scope="col">Month</th>
-                        <th scope="col" class="text-right">Sales Target</th>
-                        <th scope="col" class="text-right">Actual Sales</th>
-                        <th scope="col" class="text-right">Sales %</th>
-                        <th scope="col" class="text-right">Coll. Target</th>
-                        <th scope="col" class="text-right">Actual Coll.</th>
-                        <th scope="col" class="text-right">Coll. %</th>
+                        <th scope="col" class="text-right col-target-sales">Sales Target</th>
+                        <th scope="col" class="text-right col-actual-sales">Actual Sales</th>
+                        <th scope="col" class="text-right col-pct-sales">Sales %</th>
+                        <th scope="col" class="text-right col-target-coll">Coll. Target</th>
+                        <th scope="col" class="text-right col-actual-coll">Actual Coll.</th>
+                        <th scope="col" class="text-right col-pct-coll">Coll. %</th>
                     </tr></thead>
                     <tbody id="commBody"></tbody>
                 </table>
@@ -548,6 +764,7 @@
                         <li>Apply current Collections to the buckets (oldest first).</li>
                         <li>Lock in Current Month Actuals to History.</li>
                         <li>Clear current month holding areas.</li>
+                        <li>Advance the active month to the next month (so new transactions flow into the new month).</li>
                     </ul>
                     <br><br>
                     <button class="btn-danger" data-action="show-macro">⚙️ Execute Macro Now</button>
@@ -568,6 +785,38 @@
     </div>
 
     <div class="toast" id="successToast" role="status" aria-live="polite">Saved successfully!</div>
+
+    <div class="modal-overlay" id="editModal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle" hidden>
+        <div class="modal-box" role="document" style="max-width: 500px; text-align: left;">
+            <h3 id="editModalTitle" style="color: var(--primary); text-align: center;">✏️ Edit History Entry</h3>
+            <input type="hidden" id="editIdx" value="">
+            <div class="form-group">
+                <label for="editType">Type</label>
+                <select class="form-control" id="editType">
+                    <option value="Invoice">Invoice</option>
+                    <option value="Collection">Collection</option>
+                    <option value="Return">Return</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editCustomer">Customer (Type Name or ID)</label>
+                <input type="text" class="form-control" id="editCustomer" list="customerList" placeholder="Type customer name..." autocomplete="off">
+            </div>
+            <div class="form-group" id="editInvNumGroup">
+                <label for="editInvNum">Invoice Number</label>
+                <input type="text" inputmode="numeric" pattern="[0-9-]*" class="form-control" id="editInvNum" placeholder="e.g., 103801" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="editAmount">Amount (SAR)</label>
+                <input type="text" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="editAmount" placeholder="e.g., 1500.50" autocomplete="off">
+                <p class="field-error" id="editAmount-error">Please enter a positive amount.</p>
+            </div>
+            <div class="modal-btns" style="margin-top: 20px;">
+                <button class="btn btn-secondary" data-action="cancel-edit">Cancel</button>
+                <button class="btn" data-action="apply-edit">Save Changes</button>
+            </div>
+        </div>
+    </div>
 
 <script>
 
@@ -808,9 +1057,13 @@
         return acc;
     }, { f:0, g:0, h:0, i:0, j:0, k:0, bal:0 });
 
-    const quarterHeader = (idx) => {
+    const quarterHeaderText = (idx) => {
         const q = { 0:'Q1 (January - March)', 3:'Q2 (April - June)',
                     6:'Q3 (July - September)', 9:'Q4 (October - December)' }[idx];
+        return q || '';
+    };
+    const quarterHeader = (idx) => {
+        const q = quarterHeaderText(idx);
         return q ? `<tr class="quarter-header"><td colspan="7">${q}</td></tr>` : '';
     };
 
@@ -1039,15 +1292,17 @@
 
         // Deep clone backup for reverse
         backupState = {
-            customers:   structuredClone ? structuredClone(customers)   : JSON.parse(JSON.stringify(customers)),
-            achieveData: structuredClone ? structuredClone(achieveData) : JSON.parse(JSON.stringify(achieveData)),
-            history:     structuredClone ? structuredClone(history)     : JSON.parse(JSON.stringify(history))
+            customers:         structuredClone ? structuredClone(customers)   : JSON.parse(JSON.stringify(customers)),
+            achieveData:       structuredClone ? structuredClone(achieveData) : JSON.parse(JSON.stringify(achieveData)),
+            history:           structuredClone ? structuredClone(history)     : JSON.parse(JSON.stringify(history)),
+            currentMonthIndex: currentMonthIndex
         };
 
-        // Lock in actuals (invoices ex-VAT @ 15%)
+        // Lock in actuals (NET invoices ex-VAT @ 15%, i.e. gross invoices minus returns)
         const totalInv  = roundMoney(customers.reduce((s, c) => s + c.currentInv, 0));
+        const totalRet  = roundMoney(customers.reduce((s, c) => s + c.currentRet, 0));
         const totalColl = roundMoney(customers.reduce((s, c) => s + c.currentColl, 0));
-        achieveData[currentMonthIndex].baseSales = roundMoney(achieveData[currentMonthIndex].baseSales + totalInv / 1.15);
+        achieveData[currentMonthIndex].baseSales = roundMoney(achieveData[currentMonthIndex].baseSales + (totalInv - totalRet) / 1.15);
         achieveData[currentMonthIndex].baseColl = roundMoney(achieveData[currentMonthIndex].baseColl + totalColl);
 
         const overCollections = [];
@@ -1083,6 +1338,10 @@
             c.balance = roundMoney(bucketOrder.reduce((s, b) => s + c.buckets[b], 0));
         });
 
+        // Advance the active month (with Dec -> Jan wraparound).
+        // New transactions entered after the macro will flow into the next month.
+        currentMonthIndex = (currentMonthIndex + 1) % 12;
+
         history.unshift({
             date: new Date().toISOString(),
             type: 'Macro Run', custName: 'SYSTEM', invNum: '-', amount: 0
@@ -1108,6 +1367,9 @@
         customers   = structuredClone ? structuredClone(backupState.customers)   : JSON.parse(JSON.stringify(backupState.customers));
         achieveData = structuredClone ? structuredClone(backupState.achieveData) : JSON.parse(JSON.stringify(backupState.achieveData));
         history     = structuredClone ? structuredClone(backupState.history)     : JSON.parse(JSON.stringify(backupState.history));
+        if (typeof backupState.currentMonthIndex === 'number') {
+            currentMonthIndex = backupState.currentMonthIndex;
+        }
         backupState = null;
 
         save();
@@ -1161,7 +1423,7 @@
         const totalColl = roundMoney(customers.reduce((s, c) => s + c.currentColl, 0));
         const totalRet  = roundMoney(customers.reduce((s, c) => s + c.currentRet, 0));
         document.getElementById('totalBalance').textContent     = fmtSAR(totalBal)  + ' SAR';
-        document.getElementById('totalInvoices').textContent    = fmtSAR(totalInv)  + ' SAR';
+        document.getElementById('totalInvoices').textContent    = fmtSAR(roundMoney(totalInv - totalRet)) + ' SAR';
         document.getElementById('totalCollections').textContent = fmtSAR(totalColl) + ' SAR';
         document.getElementById('totalReturns').textContent     = fmtSAR(totalRet)  + ' SAR';
 
@@ -1172,9 +1434,10 @@
             <tr>
                 ${cell(c.id)}
                 ${cellArabic(c.name, 'nowrap')}
-                ${cellSAR(c.balance,    'cell-balance')}
-                ${cellSAR(c.currentInv, 'cell-invoice')}
-                ${cellSAR(c.currentColl,'cell-collect')}
+                ${cellSAR(c.balance,                            'cell-balance')}
+                ${cellSAR(roundMoney(c.currentInv - c.currentRet), 'cell-invoice')}
+                ${cellSAR(c.currentColl,                        'cell-collect')}
+                ${cellSAR(c.currentRet,                         'cell-returns')}
             </tr>`;
 
         const wholesaleCustomers = customers.filter(c => c.cat === 'Wholesale');
@@ -1186,20 +1449,24 @@
         // Subtotals for each dashboard table (mirrors the Aging tab pattern)
         const wSub = {
             bal: roundMoney(wholesaleCustomers.reduce((s, c) => s + c.balance,    0)),
-            inv: roundMoney(wholesaleCustomers.reduce((s, c) => s + c.currentInv, 0)),
-            col: roundMoney(wholesaleCustomers.reduce((s, c) => s + c.currentColl,0))
+            inv: roundMoney(wholesaleCustomers.reduce((s, c) => s + c.currentInv - c.currentRet, 0)),
+            col: roundMoney(wholesaleCustomers.reduce((s, c) => s + c.currentColl,0)),
+            ret: roundMoney(wholesaleCustomers.reduce((s, c) => s + c.currentRet, 0))
         };
         const rSub = {
             bal: roundMoney(restaurantCustomers.reduce((s, c) => s + c.balance,    0)),
-            inv: roundMoney(restaurantCustomers.reduce((s, c) => s + c.currentInv, 0)),
-            col: roundMoney(restaurantCustomers.reduce((s, c) => s + c.currentColl,0))
+            inv: roundMoney(restaurantCustomers.reduce((s, c) => s + c.currentInv - c.currentRet, 0)),
+            col: roundMoney(restaurantCustomers.reduce((s, c) => s + c.currentColl,0)),
+            ret: roundMoney(restaurantCustomers.reduce((s, c) => s + c.currentRet, 0))
         };
         document.getElementById('wSubBal').textContent  = fmtSAR(wSub.bal);
         document.getElementById('wSubInv').textContent  = fmtSAR(wSub.inv);
         document.getElementById('wSubColl').textContent = fmtSAR(wSub.col);
+        document.getElementById('wSubRet').textContent  = fmtSAR(wSub.ret);
         document.getElementById('rSubBal').textContent  = fmtSAR(rSub.bal);
         document.getElementById('rSubInv').textContent  = fmtSAR(rSub.inv);
         document.getElementById('rSubColl').textContent = fmtSAR(rSub.col);
+        document.getElementById('rSubRet').textContent  = fmtSAR(rSub.ret);
 
         // Aging table
         const wTotal = sumBuckets(customers.filter(c => c.cat === 'Wholesale'));
@@ -1216,24 +1483,24 @@
                 ${cell(c.id)}
                 ${cellArabic(c.name, 'nowrap')}
                 ${cellSAR(c.balance, 'cell-balance')}
-                ${cellSAR(c.buckets.f, 'text-right')}
-                ${cellSAR(c.buckets.g, 'text-right')}
-                ${cellSAR(c.buckets.h, 'text-right')}
-                ${cellSAR(c.buckets.i, 'text-right')}
-                ${cellSAR(c.buckets.j, 'text-right')}
-                ${cellSAR(c.buckets.k, 'text-right')}
+                ${cellSAR(c.buckets.f, 'text-right aging-f')}
+                ${cellSAR(c.buckets.g, 'text-right aging-g')}
+                ${cellSAR(c.buckets.h, 'text-right aging-h')}
+                ${cellSAR(c.buckets.i, 'text-right aging-i')}
+                ${cellSAR(c.buckets.j, 'text-right aging-j')}
+                ${cellSAR(c.buckets.k, 'text-right aging-k')}
             </tr>`;
 
         const formatTotalRow = (title, t, cls) => `
             <tr class="${cls}">
                 <td colspan="2">${escapeHtml(title)}</td>
-                ${cellSAR(t.bal, 'text-right')}
-                ${cellSAR(t.f, 'text-right')}
-                ${cellSAR(t.g, 'text-right')}
-                ${cellSAR(t.h, 'text-right')}
-                ${cellSAR(t.i, 'text-right')}
-                ${cellSAR(t.j, 'text-right')}
-                ${cellSAR(t.k, 'text-right')}
+                ${cellSAR(t.bal, 'text-right cell-balance')}
+                ${cellSAR(t.f, 'text-right aging-f')}
+                ${cellSAR(t.g, 'text-right aging-g')}
+                ${cellSAR(t.h, 'text-right aging-h')}
+                ${cellSAR(t.i, 'text-right aging-i')}
+                ${cellSAR(t.j, 'text-right aging-j')}
+                ${cellSAR(t.k, 'text-right aging-k')}
             </tr>`;
 
         let agingHtml = '';
@@ -1245,30 +1512,133 @@
         document.getElementById('agingBody').innerHTML = agingHtml;
 
         // History table
-        document.getElementById('historyBody').innerHTML = history.map(h => `
+        document.getElementById('historyBody').innerHTML = history.map((h, idx) => `
             <tr>
                 ${cell(fmtDate(h.date), 'nowrap')}
                 ${cell(h.type)}
                 ${cellArabic(h.custName, 'nowrap')}
                 ${cell(h.invNum || '-')}
                 ${cellSAR(h.amount, 'cell-amount')}
+                <td><div class="history-actions">
+                    <button class="btn-action btn-edit" data-action="edit-history" data-idx="${idx}" aria-label="Edit entry">Edit</button>
+                    <button class="btn-action btn-delete" data-action="delete-history" data-idx="${idx}" aria-label="Delete entry">Delete</button>
+                </div></td>
             </tr>`).join('');
 
-        // Achieve + Commission tables (deduplicated via shared row builder)
-        const liveInvExVAT = totalInv / 1.15;
+        // ---- Apple-style percentage class (cell tint) ----
+        const applePctCellClass = (pct) => {
+            const n = Number(pct) || 0;
+            if (n >= 100) return 'apple-pct-cell-good';
+            if (n >= 90)  return 'apple-pct-cell-warn';
+            return 'apple-pct-cell-low';
+        };
+        const applePctRingColor = (pct) => {
+            const n = Number(pct) || 0;
+            if (n >= 100) return '#34c759';   // Apple green
+            if (n >= 90)  return '#ff9500';   // Apple orange
+            return '#ff3b30';                 // Apple red
+        };
+
+        // ---- Build SVG circular progress ring ----
+        const buildRing = (pct, color) => {
+            const R = 28;
+            const C = 2 * Math.PI * R;
+            const safePct = Math.max(0, Math.min(100, Number(pct) || 0));
+            const offset = (C * (1 - safePct / 100)).toFixed(2);
+            return `<svg class="progress-ring" width="68" height="68" viewBox="0 0 68 68" aria-hidden="true">
+                <circle class="progress-ring-bg" cx="34" cy="34" r="${R}"></circle>
+                <circle class="progress-ring-fg" cx="34" cy="34" r="${R}"
+                        stroke="${color}"
+                        stroke-dasharray="${C.toFixed(2)}"
+                        stroke-dashoffset="${offset}"></circle>
+            </svg>`;
+        };
+
+        // ---- Build one Apple-style card (100% target with ring) ----
+        // targetVal + actualVal are needed to compute "remaining to 100%".
+        const buildFullTargetCard = (label, valueText, subText, pct, targetVal, actualVal) => {
+            const color = applePctRingColor(pct);
+            const remaining = Math.max(0, roundMoney((Number(targetVal) || 0) - (Number(actualVal) || 0)));
+            const reached = (Number(actualVal) || 0) >= (Number(targetVal) || 0) && (Number(targetVal) || 0) > 0;
+            const remainingLine = reached
+                ? `<div class="apple-card-reached">&#10003; 100% reached</div>`
+                : `<div class="apple-card-remaining">Remaining to 100%: ${escapeHtml(fmtSAR(remaining))} SAR</div>`;
+            return `<div class="apple-card">
+                <div class="apple-card-label">${escapeHtml(label)}</div>
+                <div class="apple-card-progress">
+                    ${buildRing(pct, color)}
+                    <div>
+                        <div class="apple-card-value">${escapeHtml(valueText)}</div>
+                        <div class="apple-card-sub">${escapeHtml(subText)}</div>
+                        ${remainingLine}
+                    </div>
+                </div>
+            </div>`;
+        };
+
+        // ---- Build one Apple-style card (93% remaining) ----
+        const build93Card = (label, target, actual) => {
+            const target93 = (Number(target) || 0) * 0.93;
+            const remaining = Math.max(0, roundMoney(target93 - (Number(actual) || 0)));
+            const reached = (Number(actual) || 0) >= target93 && target93 > 0;
+            const body = reached
+                ? `<div class="apple-reached">&#10003; 93% reached</div>`
+                : `<div class="apple-card-value">${escapeHtml(fmtSAR(remaining))} SAR</div>
+                   <div class="apple-card-sub">more needed to reach 93% of target</div>`;
+            return `<div class="apple-card">
+                <div class="apple-card-label">${escapeHtml(label)}</div>
+                ${body}
+            </div>`;
+        };
+
+        // ---- Compute current-month actuals (shared by cards + tables) ----
+        const liveInvExVAT = (totalInv - totalRet) / 1.15;
+        const cur = achieveData[currentMonthIndex] || { month: '', tSales: 0, tColl: 0, baseSales: 0, baseColl: 0 };
+        const curActSales = roundMoney(cur.baseSales + liveInvExVAT);
+        const curActColl  = roundMoney(cur.baseColl  + totalColl);
+        const curSPerc    = cur.tSales > 0 ? (curActSales / cur.tSales) * 100 : 0;
+        const curCPerc    = cur.tColl  > 0 ? (curActColl  / cur.tColl)  * 100 : 0;
+
+        // ---- Achieve cards: 4 cards (Sales 100%, Coll 100%, Sales 93%, Coll 93%) ----
+        document.getElementById('achieveCards').innerHTML =
+              buildFullTargetCard(`Sales Target — ${escapeHtml(cur.month)} (100%)`,
+                  `${escapeHtml(fmtSAR(curActSales))} SAR`,
+                  `of ${escapeHtml(fmtSAR(cur.tSales))} SAR target · ${escapeHtml(fmtPct(curSPerc))}`,
+                  curSPerc, cur.tSales, curActSales)
+            + buildFullTargetCard(`Collection Target — ${escapeHtml(cur.month)} (100%)`,
+                  `${escapeHtml(fmtSAR(curActColl))} SAR`,
+                  `of ${escapeHtml(fmtSAR(cur.tColl))} SAR target · ${escapeHtml(fmtPct(curCPerc))}`,
+                  curCPerc, cur.tColl, curActColl)
+            + build93Card(`Sales to Reach 93% — ${escapeHtml(cur.month)}`, cur.tSales, curActSales)
+            + build93Card(`Collection to Reach 93% — ${escapeHtml(cur.month)}`, cur.tColl, curActColl);
+
+        // ---- Commission cards: same 4 cards ----
+        document.getElementById('commCards').innerHTML =
+              buildFullTargetCard(`Sales Target — ${escapeHtml(cur.month)} (100%)`,
+                  `${escapeHtml(fmtSAR(curActSales))} SAR`,
+                  `of ${escapeHtml(fmtSAR(cur.tSales))} SAR target · ${escapeHtml(fmtPct(curSPerc))}`,
+                  curSPerc, cur.tSales, curActSales)
+            + buildFullTargetCard(`Collection Target — ${escapeHtml(cur.month)} (100%)`,
+                  `${escapeHtml(fmtSAR(curActColl))} SAR`,
+                  `of ${escapeHtml(fmtSAR(cur.tColl))} SAR target · ${escapeHtml(fmtPct(curCPerc))}`,
+                  curCPerc, cur.tColl, curActColl)
+            + build93Card(`Sales to Reach 93% — ${escapeHtml(cur.month)}`, cur.tSales, curActSales)
+            + build93Card(`Collection to Reach 93% — ${escapeHtml(cur.month)}`, cur.tColl, curActColl);
+
+        // ---- Apple-styled tables (all 12 months) ----
         let achieveHtml = '';
         let commHtml = '';
 
         achieveData.forEach((a, idx) => {
-            achieveHtml += quarterHeader(idx);
-            commHtml    += quarterHeader(idx);
+            achieveHtml += `<tr class="apple-quarter-header"><td colspan="7">${escapeHtml(quarterHeaderText(idx))}</td></tr>`;
+            commHtml    += `<tr class="apple-quarter-header"><td colspan="7">${escapeHtml(quarterHeaderText(idx))}</td></tr>`;
 
             let actSales = a.baseSales;
             let actColl  = a.baseColl;
 
             if (idx === currentMonthIndex) {
-                actSales = roundMoney(actSales + liveInvExVAT);
-                actColl  = roundMoney(actColl + totalColl);
+                actSales = curActSales;
+                actColl  = curActColl;
             } else if (idx > currentMonthIndex) {
                 actSales = 0;
                 actColl  = 0;
@@ -1277,37 +1647,147 @@
             const sPerc = a.tSales > 0 ? (actSales / a.tSales) * 100 : 0;
             const cPerc = a.tColl  > 0 ? (actColl  / a.tColl)  * 100 : 0;
 
-            // Achieve row (editable targets)
+            // Achieve row (editable targets, Apple-styled inputs)
             achieveHtml += `
                 <tr>
                     <td><strong>${escapeHtml(a.month)}</strong></td>
-                    <td class="text-right"><input type="number" step="0.01" inputmode="decimal" class="target-input cell-target-sales"
+                    <td class="text-right col-target-sales"><input type="text" inputmode="decimal" pattern="[0-9.]*" class="apple-target-input"
                         value="${escapeHtml(a.tSales)}" data-idx="${idx}" data-field="tSales"
                         aria-label="${escapeHtml(a.month)} target sales"></td>
-                    ${cellSAR(actSales, 'cell-actual-sales')}
-                    <td class="cell-pct-sales ${pctClass(sPerc)}">${escapeHtml(fmtPct(sPerc))}</td>
-                    <td class="text-right"><input type="number" step="0.01" inputmode="decimal" class="target-input cell-target-coll"
+                    <td class="text-right col-actual-sales">${escapeHtml(fmtSAR(actSales))}</td>
+                    <td class="${applePctCellClass(sPerc)}">${escapeHtml(fmtPct(sPerc))}</td>
+                    <td class="text-right col-target-coll"><input type="text" inputmode="decimal" pattern="[0-9.]*" class="apple-target-input"
                         value="${escapeHtml(a.tColl)}" data-idx="${idx}" data-field="tColl"
                         aria-label="${escapeHtml(a.month)} target collections"></td>
-                    ${cellSAR(actColl, 'cell-actual-coll')}
-                    <td class="cell-pct-coll ${pctClass(cPerc)}">${escapeHtml(fmtPct(cPerc))}</td>
+                    <td class="text-right col-actual-coll">${escapeHtml(fmtSAR(actColl))}</td>
+                    <td class="${applePctCellClass(cPerc)}">${escapeHtml(fmtPct(cPerc))}</td>
                 </tr>`;
 
             // Commission row (read-only)
             commHtml += `
                 <tr>
                     <td><strong>${escapeHtml(a.month)}</strong></td>
-                    ${cellSAR(a.tSales, 'cell-target-sales')}
-                    ${cellSAR(actSales, 'cell-actual-sales')}
-                    <td class="cell-pct-sales ${pctClass(sPerc)}">${escapeHtml(fmtPct(sPerc))}</td>
-                    ${cellSAR(a.tColl, 'cell-target-coll')}
-                    ${cellSAR(actColl, 'cell-actual-coll')}
-                    <td class="cell-pct-coll ${pctClass(cPerc)}">${escapeHtml(fmtPct(cPerc))}</td>
+                    <td class="text-right col-target-sales">${escapeHtml(fmtSAR(a.tSales))}</td>
+                    <td class="text-right col-actual-sales">${escapeHtml(fmtSAR(actSales))}</td>
+                    <td class="${applePctCellClass(sPerc)}">${escapeHtml(fmtPct(sPerc))}</td>
+                    <td class="text-right col-target-coll">${escapeHtml(fmtSAR(a.tColl))}</td>
+                    <td class="text-right col-actual-coll">${escapeHtml(fmtSAR(actColl))}</td>
+                    <td class="${applePctCellClass(cPerc)}">${escapeHtml(fmtPct(cPerc))}</td>
                 </tr>`;
         });
 
         document.getElementById('achieveBody').innerHTML = achieveHtml;
         document.getElementById('commBody').innerHTML = commHtml;
+    };
+
+    // ============================================================
+    // HISTORY EDIT / DELETE HELPERS
+    // ============================================================
+    const reverseTransaction = (customer, type, amount) => {
+        const t = String(type).toLowerCase();
+        if (t === 'invoice') {
+            customer.currentInv = roundMoney(customer.currentInv - amount);
+            customer.balance    = roundMoney(customer.balance - amount);
+        } else if (t === 'collection') {
+            customer.currentColl = roundMoney(customer.currentColl - amount);
+            customer.balance     = roundMoney(customer.balance + amount);
+        } else if (t === 'return') {
+            customer.currentRet = roundMoney(customer.currentRet - amount);
+            customer.balance    = roundMoney(customer.balance + amount);
+        }
+    };
+
+    const applyTransaction = (customer, type, amount) => {
+        const t = String(type).toLowerCase();
+        if (t === 'invoice') {
+            customer.currentInv = roundMoney(customer.currentInv + amount);
+            customer.balance    = roundMoney(customer.balance + amount);
+        } else if (t === 'collection') {
+            customer.currentColl = roundMoney(customer.currentColl + amount);
+            customer.balance     = roundMoney(customer.balance - amount);
+        } else if (t === 'return') {
+            customer.currentRet = roundMoney(customer.currentRet + amount);
+            customer.balance    = roundMoney(customer.balance - amount);
+        }
+    };
+
+    const findCustomer = (input) =>
+        customers.find(c => c.name === input || c.id === input)
+        || customers.find(c => c.name.includes(input));
+
+    const editHistoryEntry = (idx) => {
+        const h = history[idx];
+        if (!h) return;
+        document.getElementById('editIdx').value = idx;
+        document.getElementById('editType').value = h.type;
+        document.getElementById('editCustomer').value = h.custName;
+        document.getElementById('editInvNum').value = h.invNum || '';
+        document.getElementById('editAmount').value = h.amount;
+        document.getElementById('editModal').hidden = false;
+    };
+
+    const applyHistoryEdit = () => {
+        const idx = parseInt(document.getElementById('editIdx').value, 10);
+        const oldEntry = history[idx];
+        if (!oldEntry) return;
+
+        const newType = document.getElementById('editType').value;
+        const newCustInput = document.getElementById('editCustomer').value;
+        const newInvNum = document.getElementById('editInvNum').value.trim();
+        const newAmount = parseFloat(document.getElementById('editAmount').value);
+
+        const amountOk = !isNaN(newAmount) && newAmount > 0;
+        const errEl = document.getElementById('editAmount-error');
+        if (errEl) errEl.classList.toggle('show', !amountOk);
+        if (!newCustInput || !amountOk) {
+            showToast('Error: Invalid data entered!');
+            return;
+        }
+
+        const newCustomer = findCustomer(newCustInput);
+        if (!newCustomer) { showToast('Error: Customer not found!'); return; }
+
+        // Reverse the old entry's effect on its original customer
+        const oldCustomer = customers.find(c => c.name === oldEntry.custName);
+        if (oldCustomer) reverseTransaction(oldCustomer, oldEntry.type, oldEntry.amount);
+
+        // Apply the new entry's effect
+        applyTransaction(newCustomer, newType, newAmount);
+
+        // Update the history record (keep original date)
+        history[idx] = {
+            date: oldEntry.date,
+            type: newType,
+            custName: newCustomer.name,
+            invNum: newType === 'Invoice' ? newInvNum : '',
+            amount: roundMoney(newAmount)
+        };
+
+        document.getElementById('editModal').hidden = true;
+        save();
+        renderUI();
+        showToast('Entry updated successfully!');
+    };
+
+    const deleteHistoryEntry = (idx) => {
+        const entry = history[idx];
+        if (!entry) return;
+
+        const ok = window.confirm(
+            `Delete this ${entry.type} entry?\n` +
+            `Customer: ${entry.custName}\n` +
+            `Amount: ${fmtSAR(entry.amount)} SAR\n\n` +
+            `This will reverse its effect on the customer's balance.`
+        );
+        if (!ok) return;
+
+        const customer = customers.find(c => c.name === entry.custName);
+        if (customer) reverseTransaction(customer, entry.type, entry.amount);
+
+        history.splice(idx, 1);
+        save();
+        renderUI();
+        showToast('Entry deleted!');
     };
 
     // ============================================================
@@ -1337,12 +1817,16 @@
             case 'add-collection': addTransaction('collection'); break;
             case 'add-return':     addTransaction('return'); break;
             case 'add-customer':   addNewCustomer(); break;
+            case 'edit-history':   editHistoryEntry(+actionEl.dataset.idx); break;
+            case 'delete-history': deleteHistoryEntry(+actionEl.dataset.idx); break;
+            case 'apply-edit':     applyHistoryEdit(); break;
+            case 'cancel-edit':    document.getElementById('editModal').hidden = true; break;
         }
     });
 
     // Target input changes (event delegation)
     document.addEventListener('change', (e) => {
-        const t = e.target.closest('.target-input[data-idx][data-field]');
+        const t = e.target.closest('.target-input[data-idx][data-field], .apple-target-input[data-idx][data-field]');
         if (t) updateTarget(+t.dataset.idx, t.dataset.field, t.value);
     });
 

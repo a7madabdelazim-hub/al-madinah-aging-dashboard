@@ -50,16 +50,31 @@
             --coll-actual-bg: rgba(21, 128, 61, 0.22);
             --coll-actual-fg: #133D20;
 
-            /* ---- Liquid glass surfaces ---- */
-            --glass-bg: rgba(255, 255, 255, 0.72);
+            /* ---- Liquid glass surfaces (max-liquid tuning) ---- */
+            --glass-bg: rgba(255, 255, 255, 0.68);
             --glass-bd: rgba(255, 255, 255, 0.85);
-            --glass-highlight: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 45%);
-            --glass-inset-top: inset 0 1px 0 rgba(255,255,255,0.65);
-            --glass-inset-bot: inset 0 -1px 0 rgba(20, 35, 60, 0.06);
+            /* Dual specular highlight: narrow bright top edge + broad sheen */
+            --glass-highlight:
+                linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 6%,
+                                rgba(255,255,255,0) 100%),
+                linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 50%);
+            --glass-inset-top: inset 0 1px 0 rgba(255,255,255,0.75);
+            --glass-inset-bot: inset 0 -1px 0 rgba(20, 35, 60, 0.08);
             --shadow-card: 0 2px 6px rgba(20, 35, 60, 0.05), 0 1px 2px rgba(20, 35, 60, 0.04);
-            --shadow-liquid: 0 8px 24px rgba(20, 35, 60, 0.08), 0 2px 6px rgba(20, 35, 60, 0.05), inset 0 1px 0 rgba(255,255,255,0.6);
-            --shadow-liquid-hover: 0 14px 36px rgba(20, 35, 60, 0.12), 0 4px 10px rgba(20, 35, 60, 0.06), inset 0 1px 0 rgba(255,255,255,0.7);
-            --shadow-modal: 0 24px 60px rgba(20, 35, 60, 0.22), 0 8px 20px rgba(20, 35, 60, 0.10);
+            /* Triple-layer drop for depth + ambient + inner top edge light */
+            --shadow-liquid:
+                0 12px 32px rgba(20, 35, 60, 0.10),
+                0 4px 10px rgba(20, 35, 60, 0.06),
+                0 1px 2px rgba(20, 35, 60, 0.04),
+                inset 0 1px 0 rgba(255,255,255,0.70);
+            --shadow-liquid-hover:
+                0 20px 48px rgba(20, 35, 60, 0.14),
+                0 8px 16px rgba(20, 35, 60, 0.08),
+                0 2px 4px rgba(20, 35, 60, 0.05),
+                inset 0 1px 0 rgba(255,255,255,0.80);
+            --shadow-modal: 0 32px 80px rgba(20, 35, 60, 0.28), 0 12px 28px rgba(20, 35, 60, 0.14);
+            /* Per-card accent inner glow (overridden per variant) */
+            --card-glow: rgba(30, 42, 58, 0.04);
             --row-bg: #E2E8F0;
             --row-fg: var(--primary);
             --row-border: #CBD5E1;
@@ -80,39 +95,113 @@
         .sidebar-header h1 { margin: 0; font-size: 1.2rem; }
         .sidebar-header p { margin: 5px 0 0; font-size: 0.8rem; color: rgba(255,255,255,0.55); }
 
+        /* Nav container — gives pills breathing room */
+        .sidebar nav[aria-label="Sections"] {
+            padding: 0 12px;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+
+        /* LIQUID GLASS nav items — pill style */
         .nav-item {
             display: flex; align-items: center; gap: 10px;
-            padding: 15px 20px; cursor: pointer;
-            transition: background 0.2s;
-            color: white; text-decoration: none;
-            border: none; background: transparent;
+            padding: 12px 14px; cursor: pointer;
+            transition: background-color 0.22s cubic-bezier(0.19, 1, 0.22, 1),
+                        box-shadow 0.22s cubic-bezier(0.19, 1, 0.22, 1),
+                        transform 0.18s cubic-bezier(0.19, 1, 0.22, 1);
+            color: rgba(255, 255, 255, 0.82); text-decoration: none;
+            border: 1px solid transparent; background: transparent;
             font: inherit; width: 100%; text-align: left;
+            border-radius: 12px; position: relative; overflow: hidden;
+            font-size: 0.95rem; font-weight: 500;
         }
-        .nav-item:hover, .nav-item:focus-visible { background-color: rgba(255,255,255,0.08); }
-        .nav-item.active { background-color: var(--accent); box-shadow: inset 3px 0 0 rgba(255,255,255,0.4); }
-        .nav-item[aria-current="page"] { background-color: var(--accent); box-shadow: inset 3px 0 0 rgba(255,255,255,0.4); }
+        .nav-item:hover, .nav-item:focus-visible {
+            background-color: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(12px) saturate(160%);
+            -webkit-backdrop-filter: blur(12px) saturate(160%);
+            border-color: rgba(255, 255, 255, 0.14);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+        .nav-item.active, .nav-item[aria-current="page"] {
+            background-color: rgba(21, 128, 61, 0.32);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            color: #fff; font-weight: 600;
+            border-color: rgba(21, 128, 61, 0.50);
+            box-shadow: 0 4px 14px rgba(21, 128, 61, 0.30),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.30),
+                        inset 3px 0 0 rgba(255, 255, 255, 0.55);
+        }
+        .nav-item.active::before, .nav-item[aria-current="page"]::before {
+            content: ''; position: absolute; inset: 0 0 50% 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none; border-radius: 12px 12px 0 0;
+        }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; }
         .top-bar { background: rgba(255,255,255,0.78); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); padding: 15px 30px; padding-top: calc(15px + env(safe-area-inset-top)); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 15px; }
         .content-area { padding: 30px; overflow-y: auto; flex: 1; }
 
-        .hamburger { display: none; font-size: 24px; cursor: pointer; background: var(--primary); color: white; padding: 12px 18px; border-radius: 4px; line-height: 1; border: none; }
+        .hamburger {
+            display: none; font-size: 24px; cursor: pointer;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            color: white; padding: 10px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 14px; line-height: 1;
+            box-shadow: 0 4px 12px rgba(20, 35, 60, 0.18),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+                        inset 0 -1px 0 rgba(20, 35, 60, 0.10);
+            position: relative; overflow: hidden;
+            transition: transform 0.18s cubic-bezier(0.19, 1, 0.22, 1),
+                        box-shadow 0.18s cubic-bezier(0.19, 1, 0.22, 1),
+                        background-color 0.18s ease;
+        }
+        .hamburger::before {
+            content: ''; position: absolute; inset: 0 0 50% 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none; border-radius: 14px 14px 0 0;
+        }
+        .hamburger:hover { background: rgba(255, 255, 255, 0.26); transform: translateY(-1px); }
+        .hamburger:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(20, 35, 60, 0.16), inset 0 1px 0 rgba(255,255,255,0.30); }
         .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; }
         .overlay.active { display: block; }
 
         /* ---- Dashboard ---- */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .card { background: var(--glass-bg); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); padding: 20px; border-radius: 16px; box-shadow: var(--shadow-liquid); border: 1px solid var(--glass-bd); border-left: 4px solid var(--accent); position: relative; overflow: hidden; transition: transform 0.25s cubic-bezier(0.19, 1, 0.22, 1), box-shadow 0.25s cubic-bezier(0.19, 1, 0.22, 1); }
-        .card::before { content: ''; position: absolute; inset: 0; background: var(--glass-highlight); pointer-events: none; opacity: 0.7; }
+        /* ---- LIQUID GLASS KPI card (max-liquid) ---- */
+        .card {
+            --card-glow: rgba(21, 128, 61, 0.08);
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px) saturate(190%);
+            -webkit-backdrop-filter: blur(40px) saturate(190%);
+            padding: 22px; border-radius: 20px;
+            border: 1px solid var(--glass-bd);
+            box-shadow: var(--shadow-liquid), inset 0 0 28px var(--card-glow);
+            border-left: 4px solid var(--accent);
+            position: relative; overflow: hidden;
+            transition: transform 0.28s cubic-bezier(0.19, 1, 0.22, 1),
+                        box-shadow 0.28s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .card::before {
+            content: ''; position: absolute; inset: 0;
+            background: var(--glass-highlight);
+            pointer-events: none; opacity: 0.95;
+        }
         .card > * { position: relative; }
         @media (hover: hover) {
-            .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-liquid-hover); }
+            .card:hover {
+                transform: translateY(-3px);
+                box-shadow: var(--shadow-liquid-hover), inset 0 0 32px var(--card-glow);
+            }
         }
-        .card h3 { margin: 0 0 10px; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
-        .card .value { font-size: 1.8rem; font-weight: 700; color: var(--primary); letter-spacing: -0.02em; }
-        .card.warning { border-left-color: var(--warning); }
-        .card.danger  { border-left-color: var(--danger);  }
-        .card.success { border-left-color: var(--accent);  }
+        .card h3 { margin: 0 0 10px; font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+        .card .value { font-size: 1.8rem; font-weight: 700; color: var(--primary); letter-spacing: -0.02em; text-shadow: 0 1px 0 rgba(255,255,255,0.55); }
+        .card.warning { --card-glow: rgba(217, 119, 6, 0.10); border-left-color: var(--warning); }
+        .card.danger  { --card-glow: rgba(220, 38, 38, 0.10);  border-left-color: var(--danger);  }
+        .card.success { --card-glow: rgba(21, 128, 61, 0.12); border-left-color: var(--accent);  }
 
         /* ---- Tables ---- */
         /* Mobile-friendly horizontal scroll wrapper. Wrap every <table>
@@ -209,12 +298,12 @@
         .quarter-header td { background: var(--secondary) !important; color: white; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border: 2px solid var(--primary) !important; }
 
         /* ---- Forms ---- */
-        /* LIQUID GLASS form containers */
+        /* LIQUID GLASS form containers (max-liquid) */
         .form-container, .macro-panel, .reverse-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            padding: 30px; border-radius: 18px;
+            backdrop-filter: blur(40px) saturate(190%);
+            -webkit-backdrop-filter: blur(40px) saturate(190%);
+            padding: 32px; border-radius: 22px;
             border: 1px solid var(--glass-bd);
             box-shadow: var(--shadow-liquid);
             max-width: 600px;
@@ -222,9 +311,9 @@
             overflow: hidden;
         }
         .form-container::before, .macro-panel::before, .reverse-panel::before {
-            content: ''; position: absolute; inset: 0 0 auto 0; height: 50%;
-            background: var(--glass-highlight); pointer-events: none; opacity: 0.7;
-            border-radius: 18px 18px 0 0;
+            content: ''; position: absolute; inset: 0 0 auto 0; height: 55%;
+            background: var(--glass-highlight); pointer-events: none; opacity: 0.85;
+            border-radius: 22px 22px 0 0;
         }
         .form-container > *, .macro-panel > *, .reverse-panel > * { position: relative; z-index: 1; }
         .macro-panel   { max-width: 700px; margin: 0 auto; text-align: center; border-top: 5px solid var(--danger);  padding: 40px; }
@@ -328,21 +417,21 @@
                 max(20px, env(safe-area-inset-left));
         }
         .modal-overlay:not([hidden]) { display: flex; }
-        /* LIQUID GLASS modal box */
+        /* LIQUID GLASS modal box (max-liquid) */
         .modal-box {
             background: var(--glass-bg);
-            backdrop-filter: blur(28px) saturate(180%);
-            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            backdrop-filter: blur(40px) saturate(190%);
+            -webkit-backdrop-filter: blur(40px) saturate(190%);
             border: 1px solid var(--glass-bd);
-            padding: 30px; border-radius: 20px;
+            padding: 32px; border-radius: 24px;
             width: 100%; max-width: 450px; text-align: center;
             box-shadow: var(--shadow-modal);
             position: relative; overflow: hidden;
         }
         .modal-box::before {
-            content: ''; position: absolute; inset: 0 0 auto 0; height: 50%;
-            background: var(--glass-highlight); pointer-events: none; opacity: 0.7;
-            border-radius: 20px 20px 0 0;
+            content: ''; position: absolute; inset: 0 0 auto 0; height: 55%;
+            background: var(--glass-highlight); pointer-events: none; opacity: 0.9;
+            border-radius: 24px 24px 0 0;
         }
         .modal-box > * { position: relative; z-index: 1; }
         .modal-box h3 { color: var(--danger); margin-top: 0; }
@@ -427,6 +516,54 @@
                 background: #FFFFFF !important;
             }
         }
+
+        /* ---- Reduced transparency / low-end device fallback ----
+           Drops blur from 40px → 20px and disables specular highlights
+           when the user has reduced transparency enabled (iOS Setting
+           > Accessibility > Reduce Transparency, or system auto-detect
+           on older devices). Keeps the liquid feel but cuts GPU cost. */
+        @media (prefers-reduced-transparency: reduce) {
+            .card, .apple-card, .apple-table-wrap,
+            .form-container, .macro-panel, .reverse-panel, .modal-box {
+                backdrop-filter: blur(20px) saturate(150%) !important;
+                -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
+                background: rgba(255, 255, 255, 0.92) !important;
+            }
+            .card::before, .apple-card::before, .apple-table-wrap::before,
+            .form-container::before, .macro-panel::before, .reverse-panel::before,
+            .modal-box::before { display: none; }
+            .top-bar, .search-input, .form-control, .apple-target-input {
+                backdrop-filter: blur(8px) saturate(140%) !important;
+                -webkit-backdrop-filter: blur(8px) saturate(140%) !important;
+                background: rgba(255, 255, 255, 0.95) !important;
+            }
+        }
+
+        /* ---- P3 wide-gamut color boost (iPhone Pro / iPad Pro / modern Mac) ----
+           sRGB values look muted on P3 OLED because the display CAN render
+           wider gamut but we're feeding it narrow values. These overrides
+           bump the status colors ~6-8% more saturated on P3 displays so
+           they shine through the glass the way they do on laptop. */
+        @media (color-gamut: p3) {
+            :root {
+                --accent: #16A34A;       /* emerald, slightly brighter */
+                --danger: #E63946;       /* true red, slightly brighter */
+                --warning: #E58300;      /* orange, slightly brighter */
+                --success-bg: rgba(22, 163, 74, 0.18);   /* tint alpha 14% → 18% */
+                --warning-bg: rgba(229, 131, 0, 0.20);   /* tint alpha 16% → 20% */
+                --danger-bg: rgba(230, 57, 70, 0.18);    /* tint alpha 14% → 18% */
+                --cat-wholesale: #3B5B7A;
+                --cat-restaurant: #7C3F58;
+                --sales-target-bg: rgba(229, 131, 0, 0.12);
+                --sales-actual-bg: rgba(229, 131, 0, 0.26);
+                --sales-target-fg: #92560A;
+                --sales-actual-fg: #4A2C04;
+                --coll-target-bg: rgba(22, 163, 74, 0.12);
+                --coll-actual-bg: rgba(22, 163, 74, 0.26);
+                --coll-target-fg: #1F6633;
+                --coll-actual-fg: #0F2E18;
+            }
+        }
     </style>
 
     <style>
@@ -464,37 +601,35 @@
             margin-bottom: 28px;
         }
 
-        /* ---- LIQUID GLASS card (Achieve / Commission KPI tiles) ----
-           Strong backdrop blur + saturate, specular top highlight,
-           inner top edge light, inner bottom shadow, soft outer drop. */
+        /* ---- LIQUID GLASS card (Achieve / Commission KPI tiles, max-liquid) ---- */
         .apple-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(28px) saturate(180%);
-            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            backdrop-filter: blur(40px) saturate(190%);
+            -webkit-backdrop-filter: blur(40px) saturate(190%);
             border: 1px solid var(--glass-bd);
-            border-radius: 22px;
-            padding: 22px;
+            border-radius: 26px;
+            padding: 24px;
             box-shadow: var(--shadow-liquid);
             position: relative;
             overflow: hidden;
-            transition: transform 0.25s cubic-bezier(0.19, 1, 0.22, 1),
-                        box-shadow 0.25s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: transform 0.28s cubic-bezier(0.19, 1, 0.22, 1),
+                        box-shadow 0.28s cubic-bezier(0.19, 1, 0.22, 1);
         }
-        /* Specular top highlight — gives the "liquid" sheen */
+        /* Dual specular top highlight (narrow edge + broad sheen) */
         .apple-card::before {
             content: '';
             position: absolute;
             inset: 0 0 auto 0;
-            height: 50%;
+            height: 55%;
             background: var(--glass-highlight);
             pointer-events: none;
-            opacity: 0.85;
-            border-radius: 22px 22px 0 0;
+            opacity: 0.95;
+            border-radius: 26px 26px 0 0;
         }
         .apple-card > * { position: relative; z-index: 1; }
         @media (hover: hover) {
             .apple-card:hover {
-                transform: translateY(-3px);
+                transform: translateY(-4px);
                 box-shadow: var(--shadow-liquid-hover);
             }
         }
@@ -546,18 +681,24 @@
             box-shadow: var(--glass-inset-top);
         }
 
-        /* ---- LIQUID GLASS table wrapper (Achieve / Commission tables) ---- */
+        /* ---- LIQUID GLASS table wrapper (max-liquid) ---- */
         .apple-table-wrap {
             background: var(--glass-bg);
-            backdrop-filter: blur(28px) saturate(180%);
-            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            backdrop-filter: blur(40px) saturate(190%);
+            -webkit-backdrop-filter: blur(40px) saturate(190%);
             border: 1px solid var(--glass-bd);
-            border-radius: 22px;
+            border-radius: 24px;
             overflow: auto;
             box-shadow: var(--shadow-liquid);
             margin-bottom: 20px;
             position: relative;
         }
+        .apple-table-wrap::before {
+            content: ''; position: absolute; inset: 0 0 auto 0; height: 55%;
+            background: var(--glass-highlight); pointer-events: none; opacity: 0.85;
+            border-radius: 24px 24px 0 0; z-index: 0;
+        }
+        .apple-table-wrap > * { position: relative; z-index: 1; }
         .apple-table {
             width: 100%; border-collapse: collapse; background: transparent;
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
@@ -660,6 +801,70 @@
             font-size: 0.95rem;
             color: #5C3606;
         }
+
+        /* ---- TEXT-SHADOW ETCHING on glass values ----
+           Glass diffuses text edges; this 1px white shadow restores
+           crispness on numerics so they read "etched on glass"
+           instead of washed-out. Combats the perceived dullness on
+           iPhone OLED where backdrop-filter desaturates text. */
+        .apple-card-value,
+        .apple-card-sub,
+        .apple-table tbody td,
+        .cell-balance, .cell-invoice, .cell-collect, .cell-returns,
+        .cell-amount,
+        .aging-f, .aging-g, .aging-h, .aging-i, .aging-j, .aging-k {
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+        }
+        /* Darker etch for the dark-on-light subtotal rows */
+        .total-row td,
+        .total-row-w td, .total-row-r td, .total-row-g td {
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+
+        /* ---- ACHIEVE / COMMISSION tables — colored suit stripes + borders ----
+           Per the user's request: "tables with borders and color titles
+           with suit colors". The suit colors are gold (Sales) + green
+           (Collections) from the original column headers.
+
+           1. Top stripe: 4px tall, 50/50 split gold/green — visible at
+              the top edge of the table wrapper, identifies both metrics.
+           2. Per-column sticky-header bottom edge: each column header
+              gets a 2px colored bottom border matching its metric, so
+              the column identity persists when scrolling.
+           3. Stronger row separators: bumped from 0.04 → 0.10 alpha
+              for visible hierarchy between rows.
+           4. The table wrapper itself is already liquid-glass (40px
+              blur, dual specular highlight) from the first style block. */
+        .apple-table-wrap::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(to right,
+                var(--sales-actual-hd, #5C3606) 0%,
+                var(--sales-actual-hd, #5C3606) 50%,
+                var(--coll-actual-hd, #133D20) 50%,
+                var(--coll-actual-hd, #133D20) 100%);
+            pointer-events: none;
+            z-index: 3;
+            border-radius: 24px 24px 0 0;
+        }
+
+        /* Stronger row separators for visible hierarchy */
+        .apple-table tbody td {
+            border-bottom: 1px solid rgba(30, 42, 58, 0.10) !important;
+        }
+
+        /* Per-column colored bottom edge on sticky header —
+           each column header gets its own 2px colored border-bottom
+           matching its metric, so the column identity persists
+           when the user scrolls. */
+        .apple-table thead th.col-target-sales { border-bottom: 2px solid var(--sales-target-hd, #92560A) !important; }
+        .apple-table thead th.col-actual-sales { border-bottom: 2px solid var(--sales-actual-hd, #5C3606) !important; }
+        .apple-table thead th.col-pct-sales    { border-bottom: 2px solid var(--primary) !important; }
+        .apple-table thead th.col-target-coll  { border-bottom: 2px solid var(--coll-target-hd, #1F6633) !important; }
+        .apple-table thead th.col-actual-coll  { border-bottom: 2px solid var(--coll-actual-hd, #133D20) !important; }
+        .apple-table thead th.col-pct-coll     { border-bottom: 2px solid var(--primary) !important; }
     </style>
     <!-- SVG favicon: tiny inline payload (~250 bytes). Modern browsers
          prefer this over the larger base64 PNG rel="icon" above. The
@@ -794,11 +999,11 @@
                     </div>
                     <div class="form-group">
                         <label for="invNumber">Invoice Number</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9-]*" class="form-control" id="invNumber" placeholder="e.g., 103801" autocomplete="off">
+                        <input type="text" lang="en" inputmode="numeric" pattern="[0-9-]*" class="form-control" id="invNumber" placeholder="e.g., 103801" autocomplete="off" spellcheck="false">
                     </div>
                     <div class="form-group">
                         <label for="invAmount">Amount (SAR)</label>
-                        <input type="text" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="invAmount" placeholder="e.g., 1500.50" autocomplete="off" required>
+                        <input type="text" lang="en" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="invAmount" placeholder="e.g., 1500.50" autocomplete="off" spellcheck="false" required>
                         <p class="field-error" id="invAmount-error">Please enter a positive amount.</p>
                     </div>
                     <button class="btn" data-action="add-invoice">Save Invoice</button>
@@ -814,7 +1019,7 @@
                     </div>
                     <div class="form-group">
                         <label for="collAmount">Amount (SAR)</label>
-                        <input type="text" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="collAmount" placeholder="e.g., 500.00" autocomplete="off" required>
+                        <input type="text" lang="en" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="collAmount" placeholder="e.g., 500.00" autocomplete="off" spellcheck="false" required>
                         <p class="field-error" id="collAmount-error">Please enter a positive amount.</p>
                     </div>
                     <button class="btn" data-action="add-collection">Save Collection</button>
@@ -830,7 +1035,7 @@
                     </div>
                     <div class="form-group">
                         <label for="retAmount">Amount (SAR)</label>
-                        <input type="text" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="retAmount" placeholder="e.g., 50.00" autocomplete="off" required>
+                        <input type="text" lang="en" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="retAmount" placeholder="e.g., 50.00" autocomplete="off" spellcheck="false" required>
                         <p class="field-error" id="retAmount-error">Please enter a positive amount.</p>
                     </div>
                     <button class="btn" data-action="add-return">Save Return</button>
@@ -912,7 +1117,7 @@
                     </div>
                     <div class="form-group">
                         <label for="newCustId">Customer Number</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" class="form-control" id="newCustId" placeholder="e.g., 12034100" autocomplete="off" required>
+                        <input type="text" lang="en" inputmode="numeric" pattern="[0-9]*" class="form-control" id="newCustId" placeholder="e.g., 12034100" autocomplete="off" spellcheck="false" required>
                     </div>
                     <div class="form-group">
                         <label for="newCustName">Customer Name</label>
@@ -988,11 +1193,11 @@
             </div>
             <div class="form-group" id="editInvNumGroup">
                 <label for="editInvNum">Invoice Number</label>
-                <input type="text" inputmode="numeric" pattern="[0-9-]*" class="form-control" id="editInvNum" placeholder="e.g., 103801" autocomplete="off">
+                <input type="text" lang="en" inputmode="numeric" pattern="[0-9-]*" class="form-control" id="editInvNum" placeholder="e.g., 103801" autocomplete="off" spellcheck="false">
             </div>
             <div class="form-group">
                 <label for="editAmount">Amount (SAR)</label>
-                <input type="text" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="editAmount" placeholder="e.g., 1500.50" autocomplete="off">
+                <input type="text" lang="en" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="editAmount" placeholder="e.g., 1500.50" autocomplete="off" spellcheck="false">
                 <p class="field-error" id="editAmount-error">Please enter a positive amount.</p>
             </div>
             <div class="modal-btns" style="margin-top: 20px;">
@@ -1835,13 +2040,15 @@
             achieveHtml += `
                 <tr>
                     <td><strong>${escapeHtml(a.month)}</strong></td>
-                    <td class="text-right col-target-sales"><input type="text" inputmode="decimal" pattern="[0-9.]*" class="apple-target-input"
+                    <td class="text-right col-target-sales"><input type="text" lang="en" inputmode="decimal" pattern="[0-9.]*" class="apple-target-input"
                         value="${escapeHtml(a.tSales)}" data-idx="${idx}" data-field="tSales"
+                        autocomplete="off" spellcheck="false"
                         aria-label="${escapeHtml(a.month)} target sales"></td>
                     <td class="text-right col-actual-sales">${escapeHtml(fmtSAR(actSales))}</td>
                     <td class="${applePctCellClass(sPerc)}">${escapeHtml(fmtPct(sPerc))}</td>
-                    <td class="text-right col-target-coll"><input type="text" inputmode="decimal" pattern="[0-9.]*" class="apple-target-input"
+                    <td class="text-right col-target-coll"><input type="text" lang="en" inputmode="decimal" pattern="[0-9.]*" class="apple-target-input"
                         value="${escapeHtml(a.tColl)}" data-idx="${idx}" data-field="tColl"
+                        autocomplete="off" spellcheck="false"
                         aria-label="${escapeHtml(a.month)} target collections"></td>
                     <td class="text-right col-actual-coll">${escapeHtml(fmtSAR(actColl))}</td>
                     <td class="${applePctCellClass(cPerc)}">${escapeHtml(fmtPct(cPerc))}</td>

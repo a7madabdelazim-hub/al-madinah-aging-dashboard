@@ -144,16 +144,16 @@
         .content-area { padding: 30px; overflow-y: auto; flex: 1; }
 
         .hamburger {
-            display: none; font-size: 24px; cursor: pointer;
-            background: rgba(255, 255, 255, 0.18);
+            display: none; font-size: 22px; cursor: pointer;
+            background: rgba(30, 42, 58, 0.06);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
-            color: white; padding: 10px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: var(--primary); padding: 10px 16px;
+            border: 1px solid rgba(30, 42, 58, 0.12);
             border-radius: 14px; line-height: 1;
-            box-shadow: 0 4px 12px rgba(20, 35, 60, 0.18),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.35),
-                        inset 0 -1px 0 rgba(20, 35, 60, 0.10);
+            box-shadow: 0 4px 12px rgba(20, 35, 60, 0.10),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.65),
+                        inset 0 -1px 0 rgba(20, 35, 60, 0.06);
             position: relative; overflow: hidden;
             transition: transform 0.18s cubic-bezier(0.19, 1, 0.22, 1),
                         box-shadow 0.18s cubic-bezier(0.19, 1, 0.22, 1),
@@ -161,11 +161,13 @@
         }
         .hamburger::before {
             content: ''; position: absolute; inset: 0 0 50% 0;
-            background: linear-gradient(180deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0) 100%);
+            background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 100%);
             pointer-events: none; border-radius: 14px 14px 0 0;
+            z-index: 0;
         }
-        .hamburger:hover { background: rgba(255, 255, 255, 0.26); transform: translateY(-1px); }
-        .hamburger:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(20, 35, 60, 0.16), inset 0 1px 0 rgba(255,255,255,0.30); }
+        .hamburger-icon { position: relative; z-index: 2; display: inline-block; color: var(--primary); font-weight: 700; }
+        .hamburger:hover { background: rgba(30, 42, 58, 0.10); transform: translateY(-1px); }
+        .hamburger:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(20, 35, 60, 0.10), inset 0 1px 0 rgba(255,255,255,0.55); }
         .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; }
         .overlay.active { display: block; }
 
@@ -710,13 +712,14 @@
             color: var(--muted); font-size: 13px; font-weight: 500;
         }
         .apple-table thead th {
-            background: rgba(247, 249, 251, 0.88);
-            backdrop-filter: blur(12px) saturate(160%);
-            -webkit-backdrop-filter: blur(12px) saturate(160%);
+            background: rgba(247, 249, 251, 0.78);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
             color: var(--primary); font-weight: 600; font-size: 12px;
             text-transform: uppercase; letter-spacing: 0.04em;
             padding: 14px 18px; border: none; border-bottom: 1px solid rgba(30,42,58,0.08);
             text-align: left; position: sticky; top: 0; z-index: 2;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
         }
         /* Per-column header colors: gold pair (Sales), green pair (Coll),
            % = slate ink (overridden by .apple-pct-cell-* on body cells). */
@@ -733,27 +736,61 @@
         .apple-table tbody td.col-target-coll  { background: var(--coll-target-bg)  !important; color: var(--coll-target-fg);  font-weight: 600; }
         .apple-table tbody td.col-actual-coll  { background: var(--coll-actual-bg)  !important; color: var(--coll-actual-fg);  font-weight: 600; }
 
-        /* Unified 3-color % cells — same scale as aging buckets + ring */
-        .apple-pct-cell-low  { background: var(--danger-bg)  !important; color: #7F1414 !important; font-weight: 700 !important; text-align: right; }
-        .apple-pct-cell-warn { background: var(--warning-bg) !important; color: #5C3606 !important; font-weight: 700 !important; text-align: right; }
-        .apple-pct-cell-good { background: var(--success-bg) !important; color: #133D20 !important; font-weight: 700 !important; text-align: right; }
+        /* Unified 3-color % cells — scoped to .apple-table tbody td so they
+           override the liquid-glass base tint below (same specificity as
+           column tints, both !important). */
+        .apple-table tbody td.apple-pct-cell-low  { background: var(--danger-bg)  !important; color: #7F1414 !important; font-weight: 700 !important; text-align: right; }
+        .apple-table tbody td.apple-pct-cell-warn { background: var(--warning-bg) !important; color: #5C3606 !important; font-weight: 700 !important; text-align: right; }
+        .apple-table tbody td.apple-pct-cell-good { background: var(--success-bg) !important; color: #133D20 !important; font-weight: 700 !important; text-align: right; }
         .apple-table thead th.text-right { text-align: right; }
+
+        /* LIQUID GLASS table body — every cell gets a subtle frosted-glass
+           tint so the interior of the table reads as liquid, not just the
+           wrapper. Column tints and % cells (above) override this via
+           higher specificity + !important. */
         .apple-table tbody td {
-            padding: 14px 18px; border: none; border-bottom: 1px solid rgba(30,42,58,0.04);
-            font-size: 15px; color: var(--primary); background: transparent !important;
+            padding: 14px 18px; border: none;
+            border-bottom: 1px solid rgba(30,42,58,0.06);
+            font-size: 15px; color: var(--primary);
+            background: rgba(255, 255, 255, 0.22) !important;
+            backdrop-filter: blur(8px) saturate(140%);
+            -webkit-backdrop-filter: blur(8px) saturate(140%);
+        }
+        /* Alternating row stripes — subtle, via background tint */
+        .apple-table tbody tr:nth-child(even) td:not([class*="col-"]):not([class*="pct-"]) {
+            background: rgba(255, 255, 255, 0.10) !important;
         }
         .apple-table tbody td.text-right { text-align: right; }
         .apple-table tbody tr:last-child td { border-bottom: none; }
         @media (hover: hover) {
-            .apple-table tbody tr:hover td { background: rgba(30, 42, 58, 0.03) !important; }
+            .apple-table tbody tr:hover td:not([class*="pct-"]) { background: rgba(21, 128, 61, 0.06) !important; }
         }
 
+        /* ---- Quarter headers colored with suit colors ----
+           Q1/Q3 = gold (Sales suit), Q2/Q4 = green (Collections suit).
+           Each gets a gradient background matching its metric pair,
+           with a specular top highlight for the liquid feel. */
         .apple-quarter-header td {
-            background: rgba(30, 42, 58, 0.05) !important;
-            color: var(--muted); font-weight: 600;
-            text-transform: uppercase; letter-spacing: 0.06em;
-            font-size: 12px; padding: 10px 18px;
-            border-bottom: 1px solid rgba(30,42,58,0.08);
+            font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            font-size: 12px; padding: 12px 18px;
+            border-bottom: 1px solid rgba(30,42,58,0.10);
+            position: relative;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+        }
+        .apple-quarter-header.q-gold td {
+            background: linear-gradient(135deg,
+                rgba(217, 119, 6, 0.22) 0%,
+                rgba(217, 119, 6, 0.10) 100%) !important;
+            color: #5C3606;
+            border-top: 2px solid rgba(217, 119, 6, 0.35);
+        }
+        .apple-quarter-header.q-green td {
+            background: linear-gradient(135deg,
+                rgba(21, 128, 61, 0.22) 0%,
+                rgba(21, 128, 61, 0.10) 100%) !important;
+            color: #133D20;
+            border-top: 2px solid rgba(21, 128, 61, 0.35);
         }
 
         /* LIQUID GLASS target input */
@@ -903,7 +940,7 @@
                         data-action="toggle-sidebar"
                         aria-controls="sidebar overlay"
                         aria-expanded="false"
-                        aria-label="Toggle navigation menu">☰</button>
+                        aria-label="Toggle navigation menu"><span class="hamburger-icon">☰</span></button>
                 <h2 id="viewTitle">Dashboard</h2>
             </div>
             <input type="search" class="search-input" id="globalSearch"
@@ -999,11 +1036,11 @@
                     </div>
                     <div class="form-group">
                         <label for="invNumber">Invoice Number</label>
-                        <input type="text" lang="en" inputmode="numeric" pattern="[0-9-]*" class="form-control" id="invNumber" placeholder="e.g., 103801" autocomplete="off" spellcheck="false">
+                        <input type="text" lang="en" inputmode="numeric" pattern="[0-9]*" class="form-control" id="invNumber" placeholder="e.g., 103801" autocomplete="off" spellcheck="false">
                     </div>
                     <div class="form-group">
                         <label for="invAmount">Amount (SAR)</label>
-                        <input type="text" lang="en" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="invAmount" placeholder="e.g., 1500.50" autocomplete="off" spellcheck="false" required>
+                        <input type="text" lang="en" inputmode="decimal" pattern="[0-9]*" class="form-control" id="invAmount" placeholder="e.g., 1500.50" autocomplete="off" spellcheck="false" required>
                         <p class="field-error" id="invAmount-error">Please enter a positive amount.</p>
                     </div>
                     <button class="btn" data-action="add-invoice">Save Invoice</button>
@@ -1019,7 +1056,7 @@
                     </div>
                     <div class="form-group">
                         <label for="collAmount">Amount (SAR)</label>
-                        <input type="text" lang="en" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="collAmount" placeholder="e.g., 500.00" autocomplete="off" spellcheck="false" required>
+                        <input type="text" lang="en" inputmode="decimal" pattern="[0-9]*" class="form-control" id="collAmount" placeholder="e.g., 500.00" autocomplete="off" spellcheck="false" required>
                         <p class="field-error" id="collAmount-error">Please enter a positive amount.</p>
                     </div>
                     <button class="btn" data-action="add-collection">Save Collection</button>
@@ -1035,7 +1072,7 @@
                     </div>
                     <div class="form-group">
                         <label for="retAmount">Amount (SAR)</label>
-                        <input type="text" lang="en" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="retAmount" placeholder="e.g., 50.00" autocomplete="off" spellcheck="false" required>
+                        <input type="text" lang="en" inputmode="decimal" pattern="[0-9]*" class="form-control" id="retAmount" placeholder="e.g., 50.00" autocomplete="off" spellcheck="false" required>
                         <p class="field-error" id="retAmount-error">Please enter a positive amount.</p>
                     </div>
                     <button class="btn" data-action="add-return">Save Return</button>
@@ -1193,11 +1230,11 @@
             </div>
             <div class="form-group" id="editInvNumGroup">
                 <label for="editInvNum">Invoice Number</label>
-                <input type="text" lang="en" inputmode="numeric" pattern="[0-9-]*" class="form-control" id="editInvNum" placeholder="e.g., 103801" autocomplete="off" spellcheck="false">
+                <input type="text" lang="en" inputmode="numeric" pattern="[0-9]*" class="form-control" id="editInvNum" placeholder="e.g., 103801" autocomplete="off" spellcheck="false">
             </div>
             <div class="form-group">
                 <label for="editAmount">Amount (SAR)</label>
-                <input type="text" lang="en" inputmode="decimal" pattern="[0-9.]*" class="form-control" id="editAmount" placeholder="e.g., 1500.50" autocomplete="off" spellcheck="false">
+                <input type="text" lang="en" inputmode="decimal" pattern="[0-9]*" class="form-control" id="editAmount" placeholder="e.g., 1500.50" autocomplete="off" spellcheck="false">
                 <p class="field-error" id="editAmount-error">Please enter a positive amount.</p>
             </div>
             <div class="modal-btns" style="margin-top: 20px;">
@@ -2019,8 +2056,14 @@
         let commHtml = '';
 
         achieveData.forEach((a, idx) => {
-            achieveHtml += `<tr class="apple-quarter-header"><td colspan="7">${escapeHtml(quarterHeaderText(idx))}</td></tr>`;
-            commHtml    += `<tr class="apple-quarter-header"><td colspan="7">${escapeHtml(quarterHeaderText(idx))}</td></tr>`;
+            // Quarter header only renders on the first month of each quarter
+            // (idx 0, 3, 6, 9). Suit colors: Q1/Q3 = gold, Q2/Q4 = green.
+            const qText = quarterHeaderText(idx);
+            if (qText) {
+                const qSuit = (Math.floor(idx / 3) % 2 === 0) ? 'q-gold' : 'q-green';
+                achieveHtml += `<tr class="apple-quarter-header ${qSuit}"><td colspan="7">${escapeHtml(qText)}</td></tr>`;
+                commHtml    += `<tr class="apple-quarter-header ${qSuit}"><td colspan="7">${escapeHtml(qText)}</td></tr>`;
+            }
 
             let actSales = a.baseSales;
             let actColl  = a.baseColl;
@@ -2040,13 +2083,13 @@
             achieveHtml += `
                 <tr>
                     <td><strong>${escapeHtml(a.month)}</strong></td>
-                    <td class="text-right col-target-sales"><input type="text" lang="en" inputmode="decimal" pattern="[0-9.]*" class="apple-target-input"
+                    <td class="text-right col-target-sales"><input type="text" lang="en" inputmode="decimal" pattern="[0-9]*" class="apple-target-input"
                         value="${escapeHtml(a.tSales)}" data-idx="${idx}" data-field="tSales"
                         autocomplete="off" spellcheck="false"
                         aria-label="${escapeHtml(a.month)} target sales"></td>
                     <td class="text-right col-actual-sales">${escapeHtml(fmtSAR(actSales))}</td>
                     <td class="${applePctCellClass(sPerc)}">${escapeHtml(fmtPct(sPerc))}</td>
-                    <td class="text-right col-target-coll"><input type="text" lang="en" inputmode="decimal" pattern="[0-9.]*" class="apple-target-input"
+                    <td class="text-right col-target-coll"><input type="text" lang="en" inputmode="decimal" pattern="[0-9]*" class="apple-target-input"
                         value="${escapeHtml(a.tColl)}" data-idx="${idx}" data-field="tColl"
                         autocomplete="off" spellcheck="false"
                         aria-label="${escapeHtml(a.month)} target collections"></td>

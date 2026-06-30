@@ -1285,12 +1285,12 @@
         { id: "12034063", name: "المهد المتطورة", cat: "Wholesale", balance: 0.30, buckets: { f: 0, g: 0, h: 0, i: 0, j: 0, k: 0.30 }, currentInv: 0, currentColl: 0, currentRet: 0 },
         { id: "12034079", name: "شركة وادى العطا التجارية", cat: "Wholesale", balance: 36005.86, buckets: { f: 8418.00, g: 8741.36, h: 0, i: 0, j: 0, k: 0 }, currentInv: 27588.50, currentColl: 8742, currentRet: 0 },
         { id: "12034077", name: "موسسة جاهزية التوريد", cat: "Wholesale", balance: 17.50, buckets: { f: 17.50, g: 0, h: 0, i: 0, j: 0, k: 0 }, currentInv: 0, currentColl: 0, currentRet: 0 },
-        { id: "12034080", name: "اسواق شجرة طوبي", cat: "Wholesale", balance: 3150.00, buckets: { f: 0, g: 0, h: 0, i: 0, j: 0, k: 4730.00 }, currentInv: 0, currentColl: 1580, currentRet: 0 },
+        { id: "12034080", name: "اسواق شجرة طوبي", cat: "Wholesale", balance: 3700.00, buckets: { f: 0, g: 0, h: 0, i: 0, j: 0, k: 4730.00 }, currentInv: 0, currentColl: 1030, currentRet: 0 },
         
         { id: "12034057", name: "مشراق", cat: "Restaurants", balance: 320693.47, buckets: { f: 108880.85, g: 34651.23, h: 0, i: 183229.50, j: 24233.38, k: 9698.51 }, currentInv: 0, currentColl: 40000, currentRet: 0 },
         { id: "12034060", name: "مطعم يوربرجر لتقديم الوجبات", cat: "Restaurants", balance: 29726.33, buckets: { f: 21187.83, g: 4894.80, h: 0, i: 0, j: 0, k: 0 }, currentInv: 9243.70, currentColl: 5600, currentRet: 0 },
         { id: "12034061", name: "مطاعم البشير لتقديم الوجبات", cat: "Restaurants", balance: -0.70, buckets: { f: -0.70, g: 0, h: 0, i: 0, j: 0, k: 0 }, currentInv: 0, currentColl: 0, currentRet: 0 },
-        { id: "12034054", name: "شركة مطاعم بهار ونار", cat: "Restaurants", balance: -17000.00, buckets: { f: 0, g: 0, h: 0, i: 0, j: 0, k: 0 }, currentInv: 0, currentColl: 17000, currentRet: 0 },
+        { id: "12034054", name: "شركة مطاعم بهار ونار", cat: "Restaurants", balance: 0, buckets: { f: 0, g: 0, h: 0, i: 0, j: 0, k: 0 }, currentInv: 0, currentColl: 0, currentRet: 0 },
         { id: "12034065", name: "شركة الكيول التجارية", cat: "Restaurants", balance: -4054.00, buckets: { f: -2214.00, g: 0, h: 0, i: 0, j: 0, k: 0 }, currentInv: 0, currentColl: 1840, currentRet: 0 },
         { id: "12034068", name: "مطاعم ابتكار المأكولات للوجبات السريعة", cat: "Restaurants", balance: 46372.80, buckets: { f: 37784.40, g: 1.60, h: 0, i: 0, j: 0, k: 0 }, currentInv: 46520, currentColl: 37933, currentRet: 0 },
         { id: "12034070", name: "شركة تخصص لتقديم المشروبات", cat: "Restaurants", balance: -7.50, buckets: { f: 14678.00, g: 0, h: 0, i: 0, j: 0, k: 0 }, currentInv: 31131, currentColl: 45816, currentRet: 0 },
@@ -2271,6 +2271,129 @@
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
     });
+
+    // ============================================================
+    // ONE-TIME DATA MIGRATION (v1 → v1-patched, V3)
+    // Auto-patches live localStorage data on first load after this
+    // code update. Idempotent — runs only once per browser.
+    //
+    // V3 changes (vs V2):
+    //   - Recomputes balance using canonical formula (V2 left balance wrong)
+    //   - Uses V3 audit markers so it re-runs even if V2 already ran
+    //   - Automatically cleans up old V1/V2 audit markers from history
+    //
+    // What it does:
+    //   1. بهار ونار (ID 12034054) — remove the 17,000 seed collection
+    //      (set currentColl=0, recompute balance=0).
+    //   2. شجرة طوبي (ID 12034080) — deduct 1,300 SR from currentColl
+    //      (2,330 → 1,030 SR), recompute balance (→ 3,700 SR).
+    //   3. Add audit-trail entries to History (type "Adjustment").
+    //   4. Recompute balance using: sum(buckets) + currentInv - currentRet - currentColl
+    //   5. Remove old V1/V2 audit entries to keep History clean.
+    //
+    // Safety:
+    //   - Idempotent via V3 markers.
+    //   - Silent failure: continues normal load on any error.
+    //   - Uses customer ID (not name) to avoid Arabic Unicode mismatch.
+    // ============================================================
+    (function migrateCollections() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return; // No saved data yet — seed will load normally
+
+            const data = JSON.parse(raw);
+            if (data.v !== 1) return;
+            if (!Array.isArray(data.customers) || !Array.isArray(data.history)) return;
+
+            // Idempotency guard — skip if V3 already ran
+            const alreadyPatched = data.history.some(h =>
+                h.invNum === 'ADJ-BEHAR-REMOVE-V3' || h.invNum === 'ADJ-SHAJARA-DEDUCT-1300-V3'
+            );
+            if (alreadyPatched) {
+                console.log('[Migration V3] Already patched — skipping.');
+                return;
+            }
+
+            // Recompute balance using the app's canonical formula.
+            const recomputeBalance = (c) => {
+                const sumBuckets = Object.values(c.buckets || {})
+                    .reduce((s, v) => s + (Number(v) || 0), 0);
+                const newBal = sumBuckets
+                    + (Number(c.currentInv) || 0)
+                    - (Number(c.currentRet) || 0)
+                    - (Number(c.currentColl) || 0);
+                return Math.round(newBal * 100) / 100;
+            };
+
+            const today = new Date().toISOString();
+            const BEHAR_ID   = '12034054';  // شركة مطاعم بهار ونار
+            const SHAJARA_ID = '12034080';  // اسواق شجرة طوبي
+            let changed = false;
+
+            // 1. بهار ونار — remove erroneous 17,000 seed collection
+            const behar = data.customers.find(c => String(c.id) === BEHAR_ID);
+            if (behar) {
+                const oldColl = behar.currentColl;
+                const oldBal  = behar.balance;
+                behar.currentColl = 0;
+                behar.balance = recomputeBalance(behar); // formula: 0 + 0 - 0 - 0 = 0
+                data.history.unshift({
+                    date:     today,
+                    type:     'Adjustment',
+                    custName: behar.name,
+                    invNum:   'ADJ-BEHAR-REMOVE-V3',
+                    amount:   0
+                });
+                changed = true;
+                console.log('[Migration V3] بهار ونار: currentColl ' + oldColl + ' → 0, balance ' + oldBal + ' → ' + behar.balance);
+            } else {
+                console.warn('[Migration V3] Customer ID ' + BEHAR_ID + ' (بهار ونار) not found — skipped.');
+            }
+
+            // 2. شجرة طوبي — deduct 1,300 SR (2,330 → 1,030), recompute balance (→ 3,700)
+            const shajara = data.customers.find(c => String(c.id) === SHAJARA_ID);
+            if (shajara) {
+                const oldColl = shajara.currentColl;
+                const oldBal  = shajara.balance;
+                shajara.currentColl = 1030;
+                shajara.balance = recomputeBalance(shajara); // formula: 4730 + 0 - 0 - 1030 = 3700
+                data.history.unshift({
+                    date:     today,
+                    type:     'Adjustment',
+                    custName: shajara.name,
+                    invNum:   'ADJ-SHAJARA-DEDUCT-1300-V3',
+                    amount:   -1300
+                });
+                changed = true;
+                console.log('[Migration V3] شجرة طوبي: currentColl ' + oldColl + ' → 1030, balance ' + oldBal + ' → ' + shajara.balance);
+            } else {
+                console.warn('[Migration V3] Customer ID ' + SHAJARA_ID + ' (شجرة طوبي) not found — skipped.');
+            }
+
+            // 3. Clean up old V1/V2 audit entries to keep History tidy
+            const oldMarkers = [
+                'ADJ-BEHAR-REMOVE',           // V1
+                'ADJ-SHAJARA-DEDUCT-1300',    // V1
+                'ADJ-BEHAR-REMOVE-V2',        // V2
+                'ADJ-SHAJARA-DEDUCT-1300-V2'  // V2
+            ];
+            const beforeLen = data.history.length;
+            data.history = data.history.filter(h => !oldMarkers.includes(h.invNum));
+            const removedCount = beforeLen - data.history.length;
+            if (removedCount > 0) {
+                console.log('[Migration V3] Removed ' + removedCount + ' old V1/V2 audit entries.');
+                changed = true;
+            }
+
+            if (changed) {
+                data.savedAt = today;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                console.log('[Migration V3] Patched data saved to localStorage.');
+            }
+        } catch (e) {
+            console.warn('[Migration V3] Failed — continuing with normal load:', e);
+        }
+    })();
 
     // ============================================================
     // BOOTSTRAP
